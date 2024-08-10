@@ -2,40 +2,33 @@ package com.example.tmdb_movies.ui.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyHorizontalGrid
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
-import coil.request.ImageRequest
 import com.example.tmdb_movies.R
+import com.example.tmdb_movies.data.AppType
 import com.example.tmdb_movies.model.Movie
 import com.example.tmdb_movies.ui.theme.TMDBMoviesTheme
 
@@ -46,10 +39,17 @@ fun HomeScreen(
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(0.dp),
 ) {
+    val navigationItemContentList = listOf(
+        NavigationItemContent(AppType.Movie, text = "Movie"),
+        NavigationItemContent(AppType.TV, text = "TV"),
+    )
     when (movieUiState) {
         is MovieUiState.Loading -> LoadingScreen(modifier = modifier.fillMaxSize())
         is MovieUiState.Success -> MovieGridScreen(
-            movieUiState.movie, contentPadding = contentPadding, modifier = modifier.fillMaxWidth()
+            movieUiState.movie,
+            contentPadding = contentPadding,
+            navigationItemContentList = navigationItemContentList,
+            modifier = modifier.fillMaxWidth(),
         )
 
         is MovieUiState.Error -> ErrorScreen(retryAction, modifier = modifier.fillMaxSize())
@@ -86,6 +86,7 @@ fun ErrorScreen(retryAction: () -> Unit, modifier: Modifier = Modifier) {
 fun MovieGridScreen(
     movies: List<Movie>,
     modifier: Modifier = Modifier,
+    navigationItemContentList: List<NavigationItemContent>,
     contentPadding: PaddingValues = PaddingValues(0.dp),
 ) {
 //    LazyHorizontalGrid(
@@ -100,59 +101,29 @@ fun MovieGridScreen(
     Column(Modifier.fillMaxSize()) {
         LazyRow(
             Modifier
-                .weight(1F).height(20.dp)
-                .padding(10.dp), contentPadding = contentPadding
+                .padding(10.dp)
+                .height(320.dp), contentPadding = contentPadding
         ) {
             items(items = movies, key = { movie -> movie.id }) { movie ->
                 MovieCard(
                     movie, modifier = modifier
                         .padding(4.dp)
-                        .fillMaxWidth()
-                        .aspectRatio(1.5f)
+                        .fillMaxHeight()
+                        .width(160.dp)
+//                        .aspectRatio(1.5f)
                 )
             }
         }
-        LazyRow(
-            Modifier
-                .weight(1F)
-                .padding(10.dp), contentPadding = contentPadding
-        ) {
-            items(items = movies, key = { movie -> movie.id }) { movie ->
-                MovieCard(
-                    movie, modifier = modifier
-                        .padding(4.dp)
-                        .fillMaxWidth()
-                        .aspectRatio(1.5f)
-                )
-            }
-        }
-
-//        LazyHorizontalGrid(
-//            rows = GridCells.Adaptive(150.dp), modifier = modifier.padding(10.dp),
-//            contentPadding = contentPadding,
-//        ) {
-//            items(items = movies, key = { movie -> movie.id }) { movie ->
-//                MovieCard(
-//                    movie, modifier = modifier
-//                        .padding(4.dp)
-//                        .fillMaxWidth()
-//                        .aspectRatio(1.5f)
-//                )
-//            }
-//        }
-//        LazyHorizontalGrid(
-//            rows = GridCells.Adaptive(150.dp), modifier = modifier.padding(10.dp),
-//            contentPadding = contentPadding,
-//        ) {
-//            items(items = movies, key = { movie -> movie.id }) { movie ->
-//                MovieCard(
-//                    movie, modifier = modifier
-//                        .padding(4.dp)
-//                        .fillMaxWidth()
-//                        .aspectRatio(1.5f)
-//                )
-//            }
-//        }
+        BottomNavigationBar(
+            currentTab = AppType.Movie,
+            onTabPressed = { appType ->
+            },
+            navigationItemContentList = navigationItemContentList,
+            modifier = Modifier
+                .height(50.dp)
+                .fillMaxWidth()
+                .align(Alignment.CenterHorizontally)
+        )
     }
 }
 
@@ -169,7 +140,7 @@ fun MovieCard(movie: Movie, modifier: Modifier = Modifier) {
             placeholder = painterResource(R.drawable.loading_img),
             contentDescription = "NULL",
             contentScale = ContentScale.Crop,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxSize()
         )
         Text(text = movie.title)
     }
@@ -191,11 +162,36 @@ fun ErrorScreenPreview() {
     }
 }
 
-@Preview(showBackground = true)
+//@Preview(showBackground = true)
+//@Composable
+//fun PhotosGridScreenPreview() {
+//    TMDBMoviesTheme {
+//        val mockData = List(10) { Movie("$it", "", "") }
+//        MovieGridScreen(mockData)
+//    }
+//}
+
+
 @Composable
-fun PhotosGridScreenPreview() {
-    TMDBMoviesTheme {
-        val mockData = List(10) { Movie("$it", "", "") }
-        MovieGridScreen(mockData)
+private fun BottomNavigationBar(
+    currentTab: AppType,
+    onTabPressed: (AppType) -> Unit,
+    navigationItemContentList: List<NavigationItemContent>,
+    modifier: Modifier = Modifier
+) {
+    NavigationBar(modifier = modifier) {
+        for (navItem in navigationItemContentList) {
+            NavigationBarItem(
+                selected = currentTab == navItem.appType,
+                onClick = { onTabPressed(navItem.appType) },
+                icon = {
+                    Text(text = navItem.text)
+                },
+            )
+        }
     }
 }
+
+data class NavigationItemContent(
+    val appType: AppType, val text: String
+)

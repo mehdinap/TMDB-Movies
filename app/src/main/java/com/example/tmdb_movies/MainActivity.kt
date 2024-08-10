@@ -33,3 +33,16 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
+
+
+
+@RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
+@Preview(showBackground = true)
+@Composable
+fun TMDBMovieAppPreview() {
+    TMDBMoviesTheme {
+        Surface {
+            TMDBMoviesApp()
+        }
+    }
+}
