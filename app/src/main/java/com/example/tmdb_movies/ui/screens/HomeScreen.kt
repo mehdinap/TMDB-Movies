@@ -1,9 +1,12 @@
 package com.example.tmdb_movies.ui.screens
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -11,8 +14,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -25,7 +30,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.tmdb_movies.R
 import com.example.tmdb_movies.data.AppType
@@ -40,8 +47,8 @@ fun HomeScreen(
     contentPadding: PaddingValues = PaddingValues(0.dp),
 ) {
     val navigationItemContentList = listOf(
-        NavigationItemContent(AppType.Movie, text = "Movie"),
-        NavigationItemContent(AppType.TV, text = "TV"),
+        NavigationItemContent(appType = AppType.Movie, text = "Movie"),
+        NavigationItemContent(appType = AppType.TV, text = "TV"),
     )
     when (movieUiState) {
         is MovieUiState.Loading -> LoadingScreen(modifier = modifier.fillMaxSize())
@@ -82,6 +89,7 @@ fun ErrorScreen(retryAction: () -> Unit, modifier: Modifier = Modifier) {
     }
 }
 
+
 @Composable
 fun MovieGridScreen(
     movies: List<Movie>,
@@ -89,41 +97,53 @@ fun MovieGridScreen(
     navigationItemContentList: List<NavigationItemContent>,
     contentPadding: PaddingValues = PaddingValues(0.dp),
 ) {
-//    LazyHorizontalGrid(
-//        rows = GridCells.Adaptive(150.dp), modifier = modifier.padding(10.dp),
-//        contentPadding = contentPadding,
-//    ) {
-//    LazyVerticalGrid(
-//        columns = GridCells.Adaptive(140.dp),
-//        modifier = modifier.padding(10.dp),
-//        contentPadding = contentPadding,
-//    ) {
+    val scrollState = rememberScrollState()
     Column(Modifier.fillMaxSize()) {
-        LazyRow(
-            Modifier
-                .padding(10.dp)
-                .height(320.dp), contentPadding = contentPadding
-        ) {
-            items(items = movies, key = { movie -> movie.id }) { movie ->
-                MovieCard(
-                    movie, modifier = modifier
-                        .padding(4.dp)
-                        .fillMaxHeight()
-                        .width(160.dp)
-//                        .aspectRatio(1.5f)
+        Row(Modifier.weight(100F)) {
+            LazyColumn(contentPadding = contentPadding,
+                modifier = Modifier.scrollable(
+                    state = scrollState, orientation = Orientation.Vertical
                 )
+            ) {
+                item {
+                    repeat(6) {
+                        Text(
+                            text = "Action",
+                            fontSize = 22.sp,
+                            modifier = Modifier.padding(start = 10.dp, top = 10.dp)
+                        )
+                        LazyRow(
+                            Modifier
+                                .padding(start = 10.dp, end = 10.dp)
+                                .height(250.dp),
+//                            contentPadding =
+                        ) {
+                            items(items = movies, key = { movie -> movie.id }) { movie ->
+                                MovieCard(
+                                    movie,
+                                    modifier = modifier
+                                        .padding(4.dp)
+                                        .fillMaxHeight()
+                                        .width(170.dp)
+                                )
+                            }
+                        }
+                    }
+                }
+
             }
         }
-        BottomNavigationBar(
-            currentTab = AppType.Movie,
-            onTabPressed = { appType ->
-            },
-            navigationItemContentList = navigationItemContentList,
-            modifier = Modifier
-                .height(50.dp)
-                .fillMaxWidth()
-                .align(Alignment.CenterHorizontally)
-        )
+        Row(Modifier.weight(6.5F)) {
+            BottomNavigationBar(
+                currentTab = AppType.Movie,
+                onTabPressed = { appType ->
+                },
+                navigationItemContentList = navigationItemContentList,
+                modifier = Modifier
+                    .height(50.dp)
+                    .fillMaxWidth()
+            )
+        }
     }
 }
 
@@ -132,7 +152,8 @@ fun MovieCard(movie: Movie, modifier: Modifier = Modifier) {
     Card(
         modifier = modifier,
         shape = MaterialTheme.shapes.medium,
-        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
+//        onClick = ,
     ) {
         AsyncImage(
             model = movie.fullPosterUrl,
@@ -162,15 +183,22 @@ fun ErrorScreenPreview() {
     }
 }
 
-//@Preview(showBackground = true)
-//@Composable
-//fun PhotosGridScreenPreview() {
-//    TMDBMoviesTheme {
-//        val mockData = List(10) { Movie("$it", "", "") }
-//        MovieGridScreen(mockData)
-//    }
-//}
-
+@Preview(showBackground = true)
+@Composable
+fun PhotosGridScreenPreview() {
+    TMDBMoviesTheme {
+        val navigationItemContentList = listOf(
+            NavigationItemContent(appType = AppType.Movie, text = "Movie"),
+            NavigationItemContent(appType = AppType.TV, text = "TV"),
+        )
+        val mockData = List(10) { Movie("$it", "", "") }
+        MovieGridScreen(
+            mockData, contentPadding = PaddingValues(0.dp),
+            navigationItemContentList = navigationItemContentList,
+            modifier = Modifier.fillMaxWidth(),
+        )
+    }
+}
 
 @Composable
 private fun BottomNavigationBar(
@@ -184,9 +212,7 @@ private fun BottomNavigationBar(
             NavigationBarItem(
                 selected = currentTab == navItem.appType,
                 onClick = { onTabPressed(navItem.appType) },
-                icon = {
-                    Text(text = navItem.text)
-                },
+                icon = { Text(navItem.text) },
             )
         }
     }
