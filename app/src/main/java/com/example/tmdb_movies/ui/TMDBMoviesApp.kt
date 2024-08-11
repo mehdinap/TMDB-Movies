@@ -9,8 +9,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -22,7 +20,6 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.tmdb_movies.R
-import com.example.tmdb_movies.data.AppType
 import com.example.tmdb_movies.ui.screens.HomeScreen
 import com.example.tmdb_movies.ui.screens.MovieViewModel
 
@@ -31,15 +28,10 @@ import com.example.tmdb_movies.ui.screens.MovieViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TMDBMoviesApp() {
-    val navigationItemContentList = listOf(
-        NavigationItemContent(appType = AppType.Movie, text = "Movie"),
-        NavigationItemContent(appType = AppType.TV, text = "TV"),
-    )
+
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
-    Scaffold(
-        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-        topBar = { TMDBTopBarrApp(scrollBehavior = scrollBehavior) }
-    ) {
+    Scaffold(modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+        topBar = { TMDBTopBarrApp(scrollBehavior = scrollBehavior) }) {
         Surface(
             modifier = Modifier.fillMaxSize(),
         ) {
@@ -50,11 +42,8 @@ fun TMDBMoviesApp() {
                         movieUiState = movieViewModel.movieUiState,
                         retryAction = movieViewModel::getMovie,
                         contentPadding = it,
-                        modifier = Modifier
-                            .fillMaxSize()
-
+                        modifier = Modifier.fillMaxSize()
                     )
-
                 }
             }
         }
@@ -65,36 +54,18 @@ fun TMDBMoviesApp() {
 @Composable
 fun TMDBTopBarrApp(scrollBehavior: TopAppBarScrollBehavior, modifier: Modifier = Modifier) {
     CenterAlignedTopAppBar(
-        scrollBehavior = scrollBehavior,
-        title = {
+        scrollBehavior = scrollBehavior, title = {
             Text(
                 text = stringResource(R.string.top_bar_app_name),
                 style = MaterialTheme.typography.headlineMedium
             )
-        },
-        modifier = modifier
+        }, modifier = modifier
     )
 }
 
+@RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
+//@Preview
 @Composable
-private fun BottomNavigationBar(
-    currentTab: AppType,
-    onTabPressed: (AppType) -> Unit,
-    navigationItemContentList: List<NavigationItemContent>,
-    modifier: Modifier = Modifier
-) {
-    NavigationBar(modifier = modifier) {
-        for (navItem in navigationItemContentList) {
-            NavigationBarItem(
-                selected = currentTab == navItem.appType,
-                onClick = { onTabPressed(navItem.appType) },
-                icon = { Text(navItem.text) },
-            )
-        }
-    }
+fun PreviewApp() {
+    TMDBMoviesApp()
 }
-
-private data class NavigationItemContent(
-    val appType: AppType,
-    val text: String
-)
