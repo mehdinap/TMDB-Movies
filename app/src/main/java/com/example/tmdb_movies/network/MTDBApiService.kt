@@ -23,7 +23,4 @@ interface MTDBApiService {
     @Headers("accept: application/json")
     suspend fun getMovieUpcoming(): Response<MovieResponse>
 
-    @GET("")
-    @Headers("accept: application/json")
-    suspend fun getMoviePoster(id: String): Image
 }
