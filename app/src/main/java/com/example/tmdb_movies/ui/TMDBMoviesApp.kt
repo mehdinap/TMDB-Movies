@@ -15,10 +15,15 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
 import com.example.tmdb_movies.R
 import com.example.tmdb_movies.ui.screens.HomeScreen
 import com.example.tmdb_movies.ui.screens.MovieViewModel
@@ -27,11 +32,14 @@ import com.example.tmdb_movies.ui.screens.MovieViewModel
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TMDBMoviesApp() {
-
+fun TMDBMoviesApp(
+    navController: NavHostController = rememberNavController()
+) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
-    Scaffold(modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-        topBar = { TMDBTopBarrApp(scrollBehavior = scrollBehavior) }) {
+    Scaffold(
+        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+        topBar = { TMDBTopBarrApp(scrollBehavior = scrollBehavior) }
+    ) {
         Surface(
             modifier = Modifier.fillMaxSize(),
         ) {
@@ -39,8 +47,8 @@ fun TMDBMoviesApp() {
             Box {
                 Column {
                     HomeScreen(
-                        movieUiState = movieViewModel.movieUiState,
-                        retryAction = movieViewModel::getMovie,
+                        movieCategories = movieViewModel.movieCategories,
+                        retryAction = movieViewModel::getMovies,
                         contentPadding = it,
                         modifier = Modifier.fillMaxSize()
                     )
@@ -50,13 +58,19 @@ fun TMDBMoviesApp() {
     }
 }
 
+
+enum class TMDBScreen(){
+    Movie,
+    TvShows,
+
+}
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TMDBTopBarrApp(scrollBehavior: TopAppBarScrollBehavior, modifier: Modifier = Modifier) {
     CenterAlignedTopAppBar(
         scrollBehavior = scrollBehavior, title = {
             Text(
-                text = stringResource(R.string.top_bar_app_name),
+                text = stringResource(R.string.app_name_top_bar),
                 style = MaterialTheme.typography.headlineMedium
             )
         }, modifier = modifier

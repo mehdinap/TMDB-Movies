@@ -26,26 +26,39 @@ sealed interface MovieUiState {
 
 @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
 class MovieViewModel(private val movieRepository: MovieRepository) : ViewModel() {
-    var movieUiState: MovieUiState by mutableStateOf(MovieUiState.Loading)
+
+    var movieCategories: List<MovieCategory> by mutableStateOf(emptyList())
         private set
 
     init {
-        getMovie()
+        getMovies()
     }
 
     @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
-    fun getMovie() {
+    fun getMovies() {
         viewModelScope.launch {
-            movieUiState = MovieUiState.Loading
-            movieUiState = try {
-                MovieUiState.Success(movieRepository.getMovie())
-            } catch (e: IOException) {
-                MovieUiState.Error
-            } catch (e: HttpException) {
-                MovieUiState.Error
-            } catch (e: Exception) {
-                MovieUiState.Error
-            }
+            movieCategories = listOf(
+                MovieCategory("Now Playing",
+                    getMoviesFromRepository { movieRepository.getMovieNowPlaying() }),
+                MovieCategory("Popular",
+                    getMoviesFromRepository { movieRepository.getMoviePopular() }),
+                MovieCategory("Top Rated",
+                    getMoviesFromRepository { movieRepository.getMovieTopRated() }),
+                MovieCategory("Upcoming",
+                    getMoviesFromRepository { movieRepository.getMovieUpcoming() })
+            )
+        }
+    }
+
+    private suspend fun getMoviesFromRepository(fetch: suspend () -> List<Movie>): MovieUiState {
+        return try {
+            MovieUiState.Success(fetch())
+        } catch (e: IOException) {
+            MovieUiState.Error
+        } catch (e: HttpException) {
+            MovieUiState.Error
+        } catch (e: Exception) {
+            MovieUiState.Error
         }
     }
 
@@ -59,3 +72,7 @@ class MovieViewModel(private val movieRepository: MovieRepository) : ViewModel()
         }
     }
 }
+
+data class MovieCategory(
+    val title: String, val uiState: MovieUiState
+)
