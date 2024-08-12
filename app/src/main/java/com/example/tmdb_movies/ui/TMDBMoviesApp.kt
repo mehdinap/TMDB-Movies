@@ -35,6 +35,7 @@ import com.example.tmdb_movies.ui.screens.MovieViewModel
 fun TMDBMoviesApp(
     navController: NavHostController = rememberNavController()
 ) {
+    val backStackEntry by navController.currentBackStackEntryAsState()
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
@@ -57,7 +58,6 @@ fun TMDBMoviesApp(
         }
     }
 }
-
 
 enum class TMDBScreen(){
     Movie,

@@ -1,7 +1,7 @@
 package com.example.tmdb_movies.model
 
-import kotlinx.serialization.Serializable
 import com.google.gson.annotations.SerializedName
+import kotlinx.serialization.Serializable
 
 
 @Serializable
