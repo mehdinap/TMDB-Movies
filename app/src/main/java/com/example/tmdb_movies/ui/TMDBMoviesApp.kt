@@ -23,6 +23,9 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.example.tmdb_movies.R
+import com.example.tmdb_movies.ui.screens.HomeScreen
+import com.example.tmdb_movies.ui.screens.MovieViewModel
 
 @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
