@@ -15,19 +15,23 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.tmdb_movies.R
-import com.example.tmdb_movies.ui.screens.HomeScreen
-import com.example.tmdb_movies.ui.screens.MovieViewModel
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
 
 @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TMDBMoviesApp() {
+fun TMDBMoviesApp(
+    navController: NavHostController = rememberNavController()
+) {
+    val backStackEntry by navController.currentBackStackEntryAsState()
 
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     Scaffold(modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
@@ -40,7 +44,7 @@ fun TMDBMoviesApp() {
                 Column {
                     HomeScreen(
                         movieUiState = movieViewModel.movieUiState,
-                        retryAction = movieViewModel::getMovie,
+                        retryAction = movieViewModel::getMovieUpcoming,
                         contentPadding = it,
                         modifier = Modifier.fillMaxSize()
                     )
@@ -50,13 +54,18 @@ fun TMDBMoviesApp() {
     }
 }
 
+enum class TMDBScreen(){
+    Movie,
+    TvShows,
+
+}
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TMDBTopBarrApp(scrollBehavior: TopAppBarScrollBehavior, modifier: Modifier = Modifier) {
     CenterAlignedTopAppBar(
         scrollBehavior = scrollBehavior, title = {
             Text(
-                text = stringResource(R.string.top_bar_app_name),
+                text = stringResource(R.string.app_name_top_bar),
                 style = MaterialTheme.typography.headlineMedium
             )
         }, modifier = modifier
