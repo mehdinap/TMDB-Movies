@@ -1,12 +1,9 @@
 package com.example.tmdb_movies.adapters
 
-import android.net.http.HttpException
 import android.os.Build
 import androidx.annotation.RequiresExtension
 import com.example.tmdb_movies.model.Movie
 import com.example.tmdb_movies.model.MovieResponse
-import kotlinx.serialization.json.Json
-import retrofit2.Call
 import retrofit2.Response
 
 class MovieAdapter {

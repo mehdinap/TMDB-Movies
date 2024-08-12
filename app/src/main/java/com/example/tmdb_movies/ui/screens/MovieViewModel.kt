@@ -30,15 +30,15 @@ class MovieViewModel(private val movieRepository: MovieRepository) : ViewModel()
         private set
 
     init {
-        getMovie()
+        getMovieUpcoming()
     }
 
     @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
-    fun getMovie() {
+    fun getMovieUpcoming() {
         viewModelScope.launch {
             movieUiState = MovieUiState.Loading
             movieUiState = try {
-                MovieUiState.Success(movieRepository.getMovie())
+                MovieUiState.Success(movieRepository.getMovieUpcoming())
             } catch (e: IOException) {
                 MovieUiState.Error
             } catch (e: HttpException) {

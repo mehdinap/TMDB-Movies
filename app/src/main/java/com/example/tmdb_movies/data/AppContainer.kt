@@ -1,19 +1,18 @@
 package com.example.tmdb_movies.data
 
+import android.os.Build
+import androidx.annotation.RequiresExtension
 import com.example.tmdb_movies.network.MTDBApiService
-import retrofit2.Retrofit
-import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
-import kotlinx.serialization.json.Json
-import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
-import okhttp3.Request
 import okhttp3.logging.HttpLoggingInterceptor
+import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 interface AppContainer {
     val marsPhotosRepository: MovieRepository
 }
 
+@RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
 class DefaultAppContainer : AppContainer {
     private val BASE_URL = "https://api.themoviedb.org/3/"
     private val POSTER_IMAGE_BASE_URL = "https://image.tmdb.org/t/p/original/"
