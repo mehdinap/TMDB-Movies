@@ -14,6 +14,7 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.tmdb_movies.MovieApplication
 import com.example.tmdb_movies.data.MovieRepository
+import com.example.tmdb_movies.model.Genre
 import com.example.tmdb_movies.model.Movie
 import kotlinx.coroutines.launch
 import java.io.IOException
@@ -24,9 +25,16 @@ sealed interface MovieUiState {
     object Loading : MovieUiState
 }
 
+sealed interface GenresUiState {
+    data class Success(val movie: List<Genre>) : GenresUiState
+    object Error : GenresUiState
+    object Loading : GenresUiState
+}
+
 @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
 class MovieViewModel(private val movieRepository: MovieRepository) : ViewModel() {
 
+    var remoteGenres: List<Genre> by mutableStateOf(emptyList())
     var movieCategories: List<MovieCategory> by mutableStateOf(emptyList())
         private set
 
@@ -37,16 +45,26 @@ class MovieViewModel(private val movieRepository: MovieRepository) : ViewModel()
     @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
     fun getMovies() {
         viewModelScope.launch {
-            movieCategories = listOf(
-                MovieCategory("Now Playing",
-                    getMoviesFromRepository { movieRepository.getMovieNowPlaying() }),
-                MovieCategory("Popular",
-                    getMoviesFromRepository { movieRepository.getMoviePopular() }),
-                MovieCategory("Top Rated",
-                    getMoviesFromRepository { movieRepository.getMovieTopRated() }),
-                MovieCategory("Upcoming",
-                    getMoviesFromRepository { movieRepository.getMovieUpcoming() })
-            )
+            val check: GenresUiState = getGenresFromRepository { movieRepository.getMovieGenres() }
+            when (check) {
+                is GenresUiState.Success -> {
+                    remoteGenres = check.movie
+                    movieCategories = remoteGenres.take(6).map { genre ->
+                        MovieCategory(title = genre.name, uiState = getMoviesFromRepository {
+                            movieRepository.getMovieByGenres(
+                                genre.id
+                            )
+                        })
+                    }
+                }
+
+                is GenresUiState.Error -> {
+                    movieCategories =
+                        listOf(MovieCategory(title = "Fail", uiState = MovieUiState.Error))
+                }
+
+                is GenresUiState.Loading -> TODO()
+            }
         }
     }
 
@@ -59,6 +77,18 @@ class MovieViewModel(private val movieRepository: MovieRepository) : ViewModel()
             MovieUiState.Error
         } catch (e: Exception) {
             MovieUiState.Error
+        }
+    }
+
+    private suspend fun getGenresFromRepository(fetch: suspend () -> List<Genre>): GenresUiState {
+        return try {
+            GenresUiState.Success(fetch())
+        } catch (e: IOException) {
+            GenresUiState.Error
+        } catch (e: HttpException) {
+            GenresUiState.Error
+        } catch (e: Exception) {
+            GenresUiState.Error
         }
     }
 

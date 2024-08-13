@@ -2,10 +2,10 @@ package com.example.tmdb_movies.ui.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -28,12 +28,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.tmdb_movies.R
 import com.example.tmdb_movies.data.AppType
+import com.example.tmdb_movies.model.Genre
 import com.example.tmdb_movies.model.Movie
 import com.example.tmdb_movies.ui.theme.TMDBMoviesTheme
 
@@ -42,38 +42,51 @@ fun HomeScreen(
     movieCategories: List<MovieCategory>,
     retryAction: () -> Unit,
     modifier: Modifier = Modifier,
+    genreList: List<Genre>,
     contentPadding: PaddingValues = PaddingValues(0.dp),
 ) {
-    val isError = movieCategories.any { it.uiState is MovieUiState.Error }
     val navigationItemContentList = listOf(
         NavigationItemContent(appType = AppType.Movie, text = "Movie"),
         NavigationItemContent(appType = AppType.TV, text = "TV"),
     )
-    if (isError) {
+    if (movieCategories.any { it.uiState is MovieUiState.Error }) {
         ErrorScreen(
-            retryAction = retryAction,
-            modifier = Modifier.fillMaxSize()
+            retryAction = retryAction, modifier = Modifier.fillMaxSize()
         )
     } else {
         Column {
-            Row(Modifier.weight(100F)) {
-                LazyColumn(
-                    contentPadding = contentPadding,
-                    modifier = modifier.fillMaxSize()
-                ) {
-                    items(items = movieCategories) { category ->
-                        when (category.uiState) {
-                            is MovieUiState.Loading -> LoadingScreen(modifier = Modifier.fillMaxWidth())
-                            is MovieUiState.Success -> MovieCategoryRow(
-                                title = category.title,
-                                movies = category.uiState.movie,
-                                modifier = Modifier.fillMaxWidth()
-                            )
+            Column(Modifier.weight(100F)) {
+                    LazyColumn(
+                        contentPadding = contentPadding,
+                        modifier = modifier
+                            .fillMaxSize()
+                            .weight(100F)
+                    ) {
+                        items(items = movieCategories) { category ->
+                            when (category.uiState) {
+                                is MovieUiState.Loading -> LoadingScreen(modifier = Modifier.fillMaxWidth())
+                                is MovieUiState.Success -> MovieCategoryRow(
+                                    title = category.title,
+                                    movies = category.uiState.movie,
+                                    modifier = Modifier.fillMaxWidth()
+                                )
 
-                            MovieUiState.Error -> TODO()
+                                MovieUiState.Error -> TODO()
+                            }
                         }
                     }
-                }
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(start = 8.dp, end = 8.dp)
+                            .weight(10F)
+                    ) {
+                        items(items = genreList, itemContent = { genre ->
+                            Box {
+                                Text(text = genre.name, modifier = Modifier.padding(8.dp))
+                            }
+                        })
+                    }
             }
             Row(Modifier.weight(6.5F)) {
                 BottomNavigationBar(
@@ -93,9 +106,7 @@ fun HomeScreen(
 
 @Composable
 fun MovieCategoryRow(
-    title: String,
-    movies: List<Movie>,
-    modifier: Modifier = Modifier
+    title: String, movies: List<Movie>, modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier.padding(start = 8.dp)) {
         Text(text = title, fontSize = 22.sp, modifier = Modifier.padding(start = 10.dp))
@@ -106,8 +117,7 @@ fun MovieCategoryRow(
         ) {
             items(items = movies, key = { movie -> movie.id }) { movie ->
                 MovieCard(
-                    movie = movie,
-                    modifier = Modifier
+                    movie = movie, modifier = Modifier
                         .padding(4.dp)
                         .fillMaxHeight()
                         .width(170.dp)
@@ -203,41 +213,59 @@ fun ErrorScreenPreview() {
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun HomeScreenPreview() {
-    TMDBMoviesTheme {
-        val mockData = listOf(
-            MovieCategory(
-                title = "Now Playing",
-                uiState = MovieUiState.Success(
-                      List(10) { Movie(id = "$it", title = "Movie $it", poster = "") }
-                )
-            ),
-            MovieCategory(
-                title = "Popular",
-                uiState = MovieUiState.Success(
-                    List(10) { Movie(id = "${it + 10}", title = "Movie ${it + 10}", poster = "") }
-                )
-            ),
-            MovieCategory(
-                title = "Top Rated",
-                uiState = MovieUiState.Success(
-                    List(10) { Movie(id = "${it + 20}", title = "Movie ${it + 20}", poster = "") }
-                )
-            ),
-            MovieCategory(
-                title = "Upcoming",
-                uiState = MovieUiState.Loading
-            )
-        )
-        HomeScreen(
-            movieCategories = mockData,
-            retryAction = {},
-            modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(0.dp)
-        )
-    }
-}
+//@Preview(showBackground = true)
+//@Composable
+//fun HomeScreenPreview() {
+//    TMDBMoviesTheme {
+//        val mockData = listOf(
+//            MovieCategory(
+//                title = "Now Playing",
+//                uiState = MovieUiState.Success(List(10) {
+//                    Movie(
+//                        id = "$it",
+//                        title = "Movie $it",
+//                        poster = ""
+//                    )
+//                })
+//            ),
+//            MovieCategory(
+//                title = "Popular",
+//                uiState = MovieUiState.Success(List(10) {
+//                    Movie(
+//                        id = "${it + 10}",
+//                        title = "Movie ${it + 10}",
+//                        poster = ""
+//                    )
+//                })
+//            ),
+//            MovieCategory(title = "Top Rated", uiState = MovieUiState.Success(List(10) {
+//                Movie(
+//                    id = "${it + 20}",
+//                    title = "Movie ${it + 20}",
+//                    poster = ""
+//                )
+//            })),
+//            MovieCategory(
+//                title = "Upcoming", uiState = MovieUiState.Loading
+//            )
+//        )
+//        HomeScreen(
+//            movieCategories = mockData,
+//            retryAction = {},
+////            genreList = listOf(
+////                Genre("1", "test 1"),
+////                Genre("2", "test 2"),
+////                Genre("3", "test 3"),
+////                Genre("4", "test 4"),
+////                Genre("5", "test 5"),
+////                Genre("6", "test 6"),
+////                Genre("7", "test 7"),
+////                Genre("8", "test 8"),
+////            ),
+//            modifier = Modifier.fillMaxSize(),
+//            contentPadding = PaddingValues(0.dp)
+//        )
+//    }
+//}
 
 

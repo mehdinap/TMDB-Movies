@@ -1,26 +1,20 @@
 package com.example.tmdb_movies.network
 
-import android.media.Image
+import com.example.tmdb_movies.model.GenresResponse
 import com.example.tmdb_movies.model.MovieResponse
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Headers
+import retrofit2.http.Query
 
 interface MTDBApiService {
-    @GET("movie/now_playing")
+    @GET("discover/movie")
     @Headers("accept: application/json")
-    suspend fun getMovieNowPlaying(): Response<MovieResponse>
+    suspend fun getMovieByGenre(@Query("with_genres") genreId: String): Response<MovieResponse>
 
-    @GET("movie/popular")
+    @GET("genre/movie/list")
     @Headers("accept: application/json")
-    suspend fun getMoviePopular(): Response<MovieResponse>
+    suspend fun getMovieGenres(): Response<GenresResponse>
 
-    @GET("movie/top_rated")
-    @Headers("accept: application/json")
-    suspend fun getMovieTopRated(): Response<MovieResponse>
-
-    @GET("movie/upcoming")
-    @Headers("accept: application/json")
-    suspend fun getMovieUpcoming(): Response<MovieResponse>
 
 }
