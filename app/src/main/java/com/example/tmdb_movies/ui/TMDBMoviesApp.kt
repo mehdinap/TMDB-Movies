@@ -36,10 +36,8 @@ fun TMDBMoviesApp(
 ) {
     val backStackEntry by navController.currentBackStackEntryAsState()
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
-    Scaffold(
-        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-        topBar = { TMDBTopBarrApp(scrollBehavior = scrollBehavior) }
-    ) {
+    Scaffold(modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+        topBar = { TMDBTopBarrApp(scrollBehavior = scrollBehavior) }) {
         Surface(
             modifier = Modifier.fillMaxSize(),
         ) {
@@ -48,7 +46,8 @@ fun TMDBMoviesApp(
                 Column {
                     HomeScreen(
                         movieCategories = movieViewModel.movieCategories,
-                        retryAction = movieViewModel::getMovies,
+                        retryAction = { movieViewModel.getMovies() },
+                        genreList = movieViewModel.remoteGenres,
                         contentPadding = it,
                         modifier = Modifier.fillMaxSize()
                     )
@@ -58,11 +57,11 @@ fun TMDBMoviesApp(
     }
 }
 
-enum class TMDBScreen(){
-    Movie,
-    TvShows,
+enum class TMDBScreen() {
+    Movie, TvShows,
 
 }
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TMDBTopBarrApp(scrollBehavior: TopAppBarScrollBehavior, modifier: Modifier = Modifier) {
