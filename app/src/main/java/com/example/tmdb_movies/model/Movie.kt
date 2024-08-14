@@ -8,16 +8,20 @@ import kotlinx.serialization.Serializable
 data class Movie(
     val id: String,
     val title: String,
-    @SerializedName(value = "poster_path")
-    val poster: String
+    @SerializedName(value = "poster_path") val poster: String,
+    @SerializedName(value = "backdrop_path") val backdrop: String,
+    val overview: String,
 ) {
     val fullPosterUrl: String
         get() = "https://image.tmdb.org/t/p/w342$poster"
+    val fullBackdropUrl: String
+        get() = "https://image.tmdb.org/t/p/w1280$backdrop"
 }
+
 @Serializable
 data class Genre(
-    val id:String,
-    val name:String,
+    val id: String,
+    val name: String,
 )
 
 @Serializable

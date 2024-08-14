@@ -16,20 +16,11 @@ import com.example.tmdb_movies.MovieApplication
 import com.example.tmdb_movies.data.MovieRepository
 import com.example.tmdb_movies.model.Genre
 import com.example.tmdb_movies.model.Movie
+import com.example.tmdb_movies.ui.GenresUiState
+import com.example.tmdb_movies.ui.MovieUiState
 import kotlinx.coroutines.launch
 import java.io.IOException
 
-sealed interface MovieUiState {
-    data class Success(val movie: List<Movie>) : MovieUiState
-    object Error : MovieUiState
-    object Loading : MovieUiState
-}
-
-sealed interface GenresUiState {
-    data class Success(val movie: List<Genre>) : GenresUiState
-    object Error : GenresUiState
-    object Loading : GenresUiState
-}
 
 @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
 class MovieViewModel(private val movieRepository: MovieRepository) : ViewModel() {
