@@ -20,7 +20,6 @@ fun DetailScreen(
             Image(
                 painter = painter,
                 contentDescription = null,
-//                modifier = Modifier.fillMaxSize()
             )
             Text(text = movie.title)
             Text(text = movie.overview)
