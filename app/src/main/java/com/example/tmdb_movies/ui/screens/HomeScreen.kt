@@ -24,8 +24,13 @@ import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -35,14 +40,17 @@ import com.example.tmdb_movies.R
 import com.example.tmdb_movies.data.AppType
 import com.example.tmdb_movies.model.Genre
 import com.example.tmdb_movies.model.Movie
+import com.example.tmdb_movies.ui.MovieUiState
 import com.example.tmdb_movies.ui.theme.TMDBMoviesTheme
 
 @Composable
 fun HomeScreen(
     movieCategories: List<MovieCategory>,
+    detailViewModel: DetailViewModel,
     retryAction: () -> Unit,
     modifier: Modifier = Modifier,
     genreList: List<Genre>,
+    cardClicked: () -> Unit,
     contentPadding: PaddingValues = PaddingValues(0.dp),
 ) {
     val navigationItemContentList = listOf(
@@ -56,37 +64,38 @@ fun HomeScreen(
     } else {
         Column {
             Column(Modifier.weight(100F)) {
-                    LazyColumn(
-                        contentPadding = contentPadding,
-                        modifier = modifier
-                            .fillMaxSize()
-                            .weight(100F)
-                    ) {
-                        items(items = movieCategories) { category ->
-                            when (category.uiState) {
-                                is MovieUiState.Loading -> LoadingScreen(modifier = Modifier.fillMaxWidth())
-                                is MovieUiState.Success -> MovieCategoryRow(
-                                    title = category.title,
-                                    movies = category.uiState.movie,
-                                    modifier = Modifier.fillMaxWidth()
-                                )
+                LazyColumn(
+                    contentPadding = contentPadding, modifier = modifier
+                        .fillMaxSize()
+                        .weight(100F)
+                ) {
+                    items(items = movieCategories) { category ->
+                        when (category.uiState) {
+                            is MovieUiState.Loading -> LoadingScreen(modifier = Modifier.fillMaxWidth())
+                            is MovieUiState.Success -> MovieCategoryRow(
+                                title = category.title,
+                                movies = category.uiState.movie,
+                                detailViewModel = detailViewModel,
+                                cardClicked = cardClicked,
+                                modifier = Modifier.fillMaxWidth()
+                            )
 
-                                MovieUiState.Error -> TODO()
-                            }
+                            MovieUiState.Error -> TODO()
                         }
                     }
-                    LazyColumn(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(start = 8.dp, end = 8.dp)
-                            .weight(10F)
-                    ) {
-                        items(items = genreList, itemContent = { genre ->
-                            Box {
-                                Text(text = genre.name, modifier = Modifier.padding(8.dp))
-                            }
-                        })
-                    }
+                }
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(start = 8.dp, end = 8.dp)
+                        .weight(10F)
+                ) {
+                    items(items = genreList, itemContent = { genre ->
+                        Box {
+                            Text(text = genre.name, modifier = Modifier.padding(8.dp))
+                        }
+                    })
+                }
             }
             Row(Modifier.weight(6.5F)) {
                 BottomNavigationBar(
@@ -106,7 +115,11 @@ fun HomeScreen(
 
 @Composable
 fun MovieCategoryRow(
-    title: String, movies: List<Movie>, modifier: Modifier = Modifier
+    title: String,
+    movies: List<Movie>,
+    detailViewModel: DetailViewModel,
+    cardClicked: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier.padding(start = 8.dp)) {
         Text(text = title, fontSize = 22.sp, modifier = Modifier.padding(start = 10.dp))
@@ -117,7 +130,10 @@ fun MovieCategoryRow(
         ) {
             items(items = movies, key = { movie -> movie.id }) { movie ->
                 MovieCard(
-                    movie = movie, modifier = Modifier
+                    movie = movie,
+                    detailViewModel = detailViewModel,
+                    cardClicked = cardClicked,
+                    modifier = Modifier
                         .padding(4.dp)
                         .fillMaxHeight()
                         .width(170.dp)
@@ -155,20 +171,33 @@ fun ErrorScreen(retryAction: () -> Unit, modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun MovieCard(movie: Movie, modifier: Modifier = Modifier) {
+fun MovieCard(
+    movie: Movie,
+    detailViewModel: DetailViewModel,
+    cardClicked: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    var imagePainter: Painter? by remember { mutableStateOf(null) }
+
     Card(
         modifier = modifier,
         shape = MaterialTheme.shapes.medium,
         elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
-//        onClick = ,
+        onClick = {
+            detailViewModel.setCardDetail(movie, imagePainter)
+            cardClicked()
+        },
     ) {
         AsyncImage(
             model = movie.fullPosterUrl,
             error = painterResource(R.drawable.ic_broken_image),
             placeholder = painterResource(R.drawable.loading_img),
-            contentDescription = "NULL",
+            contentDescription = null,
             contentScale = ContentScale.Crop,
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier.fillMaxSize(),
+            onSuccess = { painter ->
+                imagePainter = painter.painter
+            }
         )
         Text(text = movie.title)
     }
