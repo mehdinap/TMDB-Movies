@@ -86,10 +86,8 @@ fun TMDBMoviesApp(
                 }
                 composable(route = TMDBScreen.DetailPage.name) {
                     DetailScreen(detailViewModel,
-                        onBackClicked = {
-                            navController.navigate(TMDBScreen.ShowCase.name)
-
-                        },
+                        onBackClicked = { navController.navigate(TMDBScreen.ShowCase.name)
+                        }, modifier =Modifier
                     )
                 }
             }

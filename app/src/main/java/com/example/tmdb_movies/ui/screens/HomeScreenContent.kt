@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.tmdb_movies.R
 import com.example.tmdb_movies.model.Movie
+import com.example.tmdb_movies.ui.theme.TMDBMoviesTheme
 
 
 @Composable
@@ -134,5 +135,20 @@ fun MovieCard(
                 .sizeIn(maxWidth = 150.dp)
                 .padding(start = 2.dp)
         )
+    }
+}
+//@Preview(showBackground = true)
+@Composable
+fun LoadingScreenPreview() {
+    TMDBMoviesTheme {
+        LoadingScreen()
+    }
+}
+
+//@Preview(showBackground = true)
+@Composable
+fun ErrorScreenPreview() {
+    TMDBMoviesTheme {
+        ErrorScreen({})
     }
 }

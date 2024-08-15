@@ -1,28 +1,98 @@
 package com.example.tmdb_movies.ui.screens
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.scrollable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import java.lang.reflect.Modifier
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 
 @Composable
 fun DetailScreen(
     detailViewModel: DetailViewModel,
     onBackClicked: (Int) -> Unit,
+    modifier: Modifier.Companion,
 ) {
     val movie = detailViewModel.uiState.collectAsState().value
     val painter = detailViewModel.imagePainter
 
-    if (movie != null && painter != null) {
-        Column {
-            Image(
-                painter = painter,
-                contentDescription = null,
+    val scrollState = rememberScrollState()
+    Column(
+        modifier = Modifier
+            .scrollable(
+                state = scrollState, orientation = Orientation.Vertical
             )
-            Text(text = movie.title)
-            Text(text = movie.overview)
-        } ?: Text(text = "No movie selected.")
+            .fillMaxSize()
+            .padding(20.dp),
+        verticalArrangement = Arrangement.Top,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Row {
+/*            AsyncImage(
+                model = movie!!.fullBackdropUrl,
+                error = painterResource(R.drawable.ic_broken_image),
+                placeholder = painterResource(R.drawable.loading_img),
+                contentDescription = null,
+                modifier = Modifier.fillMaxSize().fillMaxWidth().height(200.dp),
+            )*/
+            Card(
+                modifier = modifier
+                    .padding(start = 40.dp, top = 30.dp, end = 40.dp)
+                    .width(250.dp).height(350.dp),
+/*                    .fillMaxWidth(0.6F)  // Adjust width to cover part of the first image
+                .fillMaxHeight(0.6F)
+                .height(150.dp)       // Set the height for the second image
+                .align(Alignment.CenterVertically)  // Position at the bottom left of the first image
+                .offset(y = 50.dp) // Move the second image up to overlap,
+                .weight(30F),*/
+                shape = MaterialTheme.shapes.medium,
+                elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
+            ) {
+                Image(
+                    contentScale = ContentScale.Crop,
+                    painter = painter!!,
+                    contentDescription = null,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .align(Alignment.End),
+/*                .fillMaxWidth(0.6F)  // Adjust width to cover part of the first image
+                .fillMaxHeight(0.6F)
+                .height(150.dp)       // Set the height for the second image
+                .align(Alignment.BottomStart)  // Position at the bottom left of the first image
+                .offset(y = 50.dp) // Move the second image up to overlap*/
+                )
+            }
+        }
+        Row {
+            Text(
+                text = movie!!.title, modifier = Modifier
+                    .fillMaxWidth()
+//                .weight(5F)
+                    .padding(8.dp), fontSize = 30.sp
+            )
+        }
+        Text(
+            text = movie!!.overview, modifier = Modifier
+                .fillMaxWidth()
+//                .weight(40F)
+                .padding(8.dp), fontSize = 20.sp
+        )
     }
 }

@@ -24,6 +24,7 @@ class DetailViewModel() : ViewModel() {
     }
 
 
+
     companion object {
         val Factory: ViewModelProvider.Factory = viewModelFactory {
             initializer {
