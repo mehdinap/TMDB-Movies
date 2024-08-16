@@ -33,6 +33,8 @@ import androidx.navigation.compose.rememberNavController
 import com.example.tmdb_movies.R
 import com.example.tmdb_movies.ui.screens.DetailScreen
 import com.example.tmdb_movies.ui.screens.DetailViewModel
+import com.example.tmdb_movies.ui.screens.GenreScreen
+import com.example.tmdb_movies.ui.screens.GenreViewModel
 import com.example.tmdb_movies.ui.screens.HomeScreen
 import com.example.tmdb_movies.ui.screens.MovieViewModel
 
@@ -50,6 +52,7 @@ fun TMDBMoviesApp(
 ) {
     val movieViewModel: MovieViewModel = viewModel(factory = MovieViewModel.Factory)
     val detailViewModel: DetailViewModel = viewModel(factory = DetailViewModel.Factory)
+    val genreViewModel: GenreViewModel = viewModel(factory = GenreViewModel.Factory)
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     Scaffold(modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection), topBar = {
         TMDBTopBarrApp(
@@ -73,10 +76,14 @@ fun TMDBMoviesApp(
                                 HomeScreen(
                                     movieCategories = movieViewModel.movieCategories,
                                     detailViewModel = detailViewModel,
+                                    genreViewModel = genreViewModel,
                                     retryAction = { movieViewModel.getMovies() },
                                     genreList = movieViewModel.remoteGenres,
                                     cardClicked = {
                                         navController.navigate(TMDBScreen.DetailPage.name)
+                                    },
+                                    genreClicked = {
+                                        navController.navigate(TMDBScreen.GenrePage.name)
                                     },
                                     modifier = Modifier.fillMaxSize()
                                 )
@@ -85,9 +92,17 @@ fun TMDBMoviesApp(
                     }
                 }
                 composable(route = TMDBScreen.DetailPage.name) {
-                    DetailScreen(detailViewModel,
-                        onBackClicked = { navController.navigate(TMDBScreen.ShowCase.name)
-                        }, modifier =Modifier
+                    DetailScreen(
+                        detailViewModel, onBackClicked = {
+                            navController.navigate(TMDBScreen.ShowCase.name)
+                        }, modifier = Modifier
+                    )
+                }
+                composable(route = TMDBScreen.GenrePage.name) {
+                    GenreScreen(
+                        genreViewModel, onBackClicked = {
+                            navController.navigate(TMDBScreen.ShowCase.name)
+                        }, modifier = Modifier
                     )
                 }
             }
