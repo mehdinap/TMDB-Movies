@@ -12,7 +12,7 @@ import com.example.tmdb_movies.network.MTDBApiService
 interface MovieRepository {
     suspend fun getMovieByGenres(genreId: String): List<Movie>
     suspend fun getMovieGenres(): List<Genre>
-    fun getMoviePagingSource(genreId: String): PagingSource<Int, Movie> // Add this method
+    fun getMoviePagingSource(genreId: String): PagingSource<Int, Movie>
 }
 
 @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
@@ -29,8 +29,6 @@ class NetworkMovieRepository(
     }
 
     override fun getMoviePagingSource(genreId: String): PagingSource<Int, Movie> {
-        val t = MoviePagingSource(genreId, apiService)
-        Log.i("golabi",t.toString())
-        return t
+        return MoviePagingSource(genreId, apiService)
     }
 }

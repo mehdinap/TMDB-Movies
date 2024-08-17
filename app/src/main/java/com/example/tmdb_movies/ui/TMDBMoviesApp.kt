@@ -103,9 +103,11 @@ fun TMDBMoviesApp(
                     GenreScreen(
                         genreViewModel,
                         detailViewModel = detailViewModel,
-                        onBackClicked = {
-
-                            navController.navigate(TMDBScreen.ShowCase.name)
+//                        onBackClicked = {
+//                            navController.navigate(TMDBScreen.ShowCase.name)
+//                        },
+                        cardClicked = {
+                            navController.navigate(TMDBScreen.DetailPage.name)
                         },
                         modifier = Modifier
                     )
