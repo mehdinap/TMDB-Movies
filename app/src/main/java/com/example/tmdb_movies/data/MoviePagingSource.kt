@@ -17,10 +17,8 @@ class MoviePagingSource(
     @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Movie> {
         val page = params.key ?: 1
-//        Log.i("GOLABI","page:$page")
         return try {
-            val response = apiService.getMovieByGenre(genreId, page)
-            val movies = MovieAdapter.moviesOfResponse(response)
+            val movies = MovieAdapter.moviesOfResponse(apiService.getMovieByGenre(genreId, page))
 
             LoadResult.Page(
                 data = movies,

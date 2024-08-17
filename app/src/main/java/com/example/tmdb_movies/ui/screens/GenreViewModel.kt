@@ -25,10 +25,9 @@ class GenreViewModel(private val movieRepository: MovieRepository) : ViewModel()
 
     private val _moviesPagingData = MutableStateFlow<PagingData<Movie>>(PagingData.empty())
     val moviesPagingData: StateFlow<PagingData<Movie>> get() = _moviesPagingData
-//    val m: MutableList<PagingData<Movie>> = mutableListOf()
     private var hasLoadedInitialPage = false
 
-    fun getMoviesPaging(genreId: String): Flow<PagingData<Movie>> {
+    private fun getMoviePaging(genreId: String): Flow<PagingData<Movie>> {
         return Pager(PagingConfig(pageSize = 20)) {
             movieRepository.getMoviePagingSource(genreId)
         }.flow.cachedIn(viewModelScope)
@@ -36,10 +35,8 @@ class GenreViewModel(private val movieRepository: MovieRepository) : ViewModel()
 
     fun loadMoviesForGenre(genreId: String) {
         viewModelScope.launch {
-            getMoviesPaging(genreId).collect { pagingData ->
+            getMoviePaging(genreId).collect { pagingData ->
                     _moviesPagingData.update { pagingData }
-//                    m.addAll(listOf(pagingData))
-//                    Log.i("loaddddddddddd",m.size.toString())
                     hasLoadedInitialPage = true
                 }
         }
