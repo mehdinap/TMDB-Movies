@@ -10,7 +10,11 @@ import retrofit2.http.Query
 interface MTDBApiService {
     @GET("discover/movie")
     @Headers("accept: application/json")
-    suspend fun getMovieByGenre(@Query("with_genres") genreId: String): Response<MovieResponse>
+    suspend fun getMovieByGenre(
+        @Query("with_genres") genreId: String,
+        @Query("page") page: Int // Ensure page parameter is included
+    ): Response<MovieResponse>
+
 
     @GET("genre/movie/list")
     @Headers("accept: application/json")

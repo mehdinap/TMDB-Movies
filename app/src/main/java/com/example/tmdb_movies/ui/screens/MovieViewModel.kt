@@ -41,7 +41,7 @@ class MovieViewModel(private val movieRepository: MovieRepository) : ViewModel()
                 is GenresUiState.Success -> {
                     remoteGenres = check.movie
                     movieCategories = remoteGenres.take(6).map { genre ->
-                        MovieCategory(title = genre.name, uiState = getMoviesFromRepository {
+                        MovieCategory(genre = genre, uiState = getMoviesFromRepository {
                             movieRepository.getMovieByGenres(
                                 genre.id
                             )
@@ -51,7 +51,7 @@ class MovieViewModel(private val movieRepository: MovieRepository) : ViewModel()
 
                 is GenresUiState.Error -> {
                     movieCategories =
-                        listOf(MovieCategory(title = "Fail", uiState = MovieUiState.Error))
+                        listOf(MovieCategory(genre = Genre("0","Fail"), uiState = MovieUiState.Error))
                 }
 
                 is GenresUiState.Loading -> TODO()
@@ -87,7 +87,7 @@ class MovieViewModel(private val movieRepository: MovieRepository) : ViewModel()
         val Factory: ViewModelProvider.Factory = viewModelFactory {
             initializer {
                 val application = (this[APPLICATION_KEY] as MovieApplication)
-                val movieRepository = application.container.marsPhotosRepository
+                val movieRepository = application.container.movieRepository
                 MovieViewModel(movieRepository = movieRepository)
             }
         }
@@ -95,5 +95,5 @@ class MovieViewModel(private val movieRepository: MovieRepository) : ViewModel()
 }
 
 data class MovieCategory(
-    val title: String, val uiState: MovieUiState
+    val genre: Genre, val uiState: MovieUiState
 )

@@ -32,10 +32,12 @@ val navigationItemContentList = listOf(
 fun HomeScreen(
     movieCategories: List<MovieCategory>,
     detailViewModel: DetailViewModel,
+    genreViewModel: GenreViewModel ,
     retryAction: () -> Unit,
     modifier: Modifier = Modifier,
     genreList: List<Genre>,
     cardClicked: () -> Unit,
+    genreClicked: () -> Unit,
     contentPadding: PaddingValues = PaddingValues(0.dp),
 ) {
 
@@ -55,10 +57,12 @@ fun HomeScreen(
                         when (category.uiState) {
                             is MovieUiState.Loading -> LoadingScreen(modifier = Modifier.fillMaxWidth())
                             is MovieUiState.Success -> MovieCategoryRow(
-                                title = category.title,
+                                movieCategory = category,
                                 movies = category.uiState.movie,
                                 detailViewModel = detailViewModel,
+                                genreViewModel = genreViewModel,
                                 cardClicked = cardClicked,
+                                genreClicked = genreClicked,
                                 modifier = Modifier.fillMaxWidth()
                             )
 
