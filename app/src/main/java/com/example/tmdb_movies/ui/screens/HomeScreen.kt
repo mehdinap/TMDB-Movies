@@ -57,7 +57,7 @@ fun HomeScreen(
                         when (category.uiState) {
                             is MovieUiState.Loading -> LoadingScreen(modifier = Modifier.fillMaxWidth())
                             is MovieUiState.Success -> MovieCategoryRow(
-                                title = category.title,
+                                movieCategory = category,
                                 movies = category.uiState.movie,
                                 detailViewModel = detailViewModel,
                                 genreViewModel = genreViewModel,

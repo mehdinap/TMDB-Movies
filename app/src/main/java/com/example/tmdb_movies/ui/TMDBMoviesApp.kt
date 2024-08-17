@@ -6,6 +6,7 @@ import androidx.annotation.RequiresExtension
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -24,12 +25,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.tmdb_movies.MovieApplication
 import com.example.tmdb_movies.R
 import com.example.tmdb_movies.ui.screens.DetailScreen
 import com.example.tmdb_movies.ui.screens.DetailViewModel
@@ -53,17 +56,17 @@ fun TMDBMoviesApp(
     val movieViewModel: MovieViewModel = viewModel(factory = MovieViewModel.Factory)
     val detailViewModel: DetailViewModel = viewModel(factory = DetailViewModel.Factory)
     val genreViewModel: GenreViewModel = viewModel(factory = GenreViewModel.Factory)
+
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+
     Scaffold(modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection), topBar = {
         TMDBTopBarrApp(
             scrollBehavior = scrollBehavior,
             navigateUp = { navController.navigateUp() },
-            canNavigateBack = navController.previousBackStackEntry != null,
+            canNavigateBack = navController.previousBackStackEntry != null
         )
     }) { innerPadding ->
-        Surface(
-            modifier = Modifier.fillMaxSize(),
-        ) {
+        Surface(modifier = Modifier.fillMaxSize()) {
             NavHost(
                 navController = navController,
                 startDestination = TMDBScreen.ShowCase.name,
@@ -71,42 +74,43 @@ fun TMDBMoviesApp(
             ) {
                 composable(route = TMDBScreen.ShowCase.name) {
                     Box {
-                        Box {
-                            Column {
-                                HomeScreen(
-                                    movieCategories = movieViewModel.movieCategories,
-                                    detailViewModel = detailViewModel,
-                                    genreViewModel = genreViewModel,
-                                    retryAction = { movieViewModel.getMovies() },
-                                    genreList = movieViewModel.remoteGenres,
-                                    cardClicked = {
-                                        navController.navigate(TMDBScreen.DetailPage.name)
-                                    },
-                                    genreClicked = {
-                                        navController.navigate(TMDBScreen.GenrePage.name)
-                                    },
-                                    modifier = Modifier.fillMaxSize()
-                                )
-                            }
+                        Column {
+                            HomeScreen(
+                                movieCategories = movieViewModel.movieCategories,
+                                detailViewModel = detailViewModel,
+                                genreViewModel = genreViewModel,
+                                retryAction = { movieViewModel.getMovies() },
+                                genreList = movieViewModel.remoteGenres,
+                                cardClicked = {
+                                    navController.navigate(TMDBScreen.DetailPage.name)
+                                },
+                                genreClicked = {
+                                    navController.navigate(TMDBScreen.GenrePage.name)
+                                },
+                                modifier = Modifier.fillMaxSize()
+                            )
                         }
                     }
                 }
                 composable(route = TMDBScreen.DetailPage.name) {
                     DetailScreen(
-                        detailViewModel, onBackClicked = {
-                            navController.navigate(TMDBScreen.ShowCase.name)
-                        }, modifier = Modifier
+                        detailViewModel,
+                        onBackClicked = { navController.navigate(TMDBScreen.ShowCase.name) },
+                        modifier = Modifier
                     )
                 }
                 composable(route = TMDBScreen.GenrePage.name) {
                     GenreScreen(
-                        genreViewModel, onBackClicked = {
+                        genreViewModel,
+                        detailViewModel = detailViewModel,
+                        onBackClicked = {
+
                             navController.navigate(TMDBScreen.ShowCase.name)
-                        }, modifier = Modifier
+                        },
+                        modifier = Modifier
                     )
                 }
             }
-
         }
     }
 }
@@ -121,11 +125,7 @@ fun TMDBTopBarrApp(
     modifier: Modifier = Modifier
 ) {
     CenterAlignedTopAppBar(scrollBehavior = scrollBehavior, title = {
-        Text(
-            text = stringResource(R.string.app_name_top_bar),
-            style = MaterialTheme.typography.headlineMedium
-        )
-    }, modifier = modifier.background(Color.Transparent), navigationIcon = {
+        Row {
         if (canNavigateBack) {
             IconButton(onClick = navigateUp) {
                 Icon(
@@ -134,6 +134,11 @@ fun TMDBTopBarrApp(
                 )
             }
         }
+            Text(
+                text = stringResource(R.string.app_name_top_bar),
+                style = MaterialTheme.typography.headlineMedium
+            )
+    }
     })
 }
 

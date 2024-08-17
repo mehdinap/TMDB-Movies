@@ -27,7 +27,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -42,7 +41,7 @@ import com.example.tmdb_movies.ui.theme.TMDBMoviesTheme
 
 @Composable
 fun MovieCategoryRow(
-    title: String,
+    movieCategory: MovieCategory,
     movies: List<Movie>,
     detailViewModel: DetailViewModel,
     genreViewModel: GenreViewModel,
@@ -57,7 +56,7 @@ fun MovieCategoryRow(
             modifier = Modifier.fillMaxWidth()
         ) {
             Text(
-                text = title,
+                text = movieCategory.genre.name,
                 fontSize = 22.sp,
                 modifier = Modifier.padding(start = 10.dp)
             )
@@ -65,7 +64,7 @@ fun MovieCategoryRow(
             TextButton(
                 content = { Text(text = "More >>", fontSize = 15.sp) },
                 onClick = {
-                    genreViewModel.setMovies(movies)
+                    genreViewModel.loadMoviesForGenre(movieCategory.genre.id)
                     genreClicked()
                 }
             )

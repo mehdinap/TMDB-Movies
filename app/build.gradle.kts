@@ -80,4 +80,7 @@ dependencies {
     implementation("androidx.navigation:navigation-fragment-ktx:2.8.0-alpha08")
     implementation("androidx.navigation:navigation-ui-ktx:2.8.0-alpha08")
 
+    implementation("androidx.paging:paging-runtime:3.1.1")
+    implementation("androidx.paging:paging-compose:1.0.0-alpha18")
+
 }
