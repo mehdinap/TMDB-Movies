@@ -23,7 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.paging.compose.collectAsLazyPagingItems
 import coil.compose.AsyncImage
-import com.example.myapplication.R
+import com.example.tmdb_movies.R
 
 @Composable
 fun GenreScreen(

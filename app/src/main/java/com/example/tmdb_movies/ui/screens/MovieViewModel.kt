@@ -24,7 +24,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.IOException
 
-@RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
 class MovieViewModel(private val movieRepository: MovieRepository) : ViewModel() {
 
     var remoteGenres: List<Genre> by mutableStateOf(emptyList())
@@ -36,7 +35,6 @@ class MovieViewModel(private val movieRepository: MovieRepository) : ViewModel()
     }
 
     /* for under API 31 crashed .  use alternative. */
-    @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
     fun getMovies() {
         viewModelScope.launch(Dispatchers.IO) {
             val check: GenresUiState = getGenresFromRepository {
@@ -71,7 +69,6 @@ class MovieViewModel(private val movieRepository: MovieRepository) : ViewModel()
         }
     }
 
-    @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
     private suspend fun getMoviesFromRepository(fetch: suspend () -> List<Movie>): MovieUiState {
         return try {
             MovieUiState.Success(fetch())
@@ -84,7 +81,6 @@ class MovieViewModel(private val movieRepository: MovieRepository) : ViewModel()
         }
     }
 
-    @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
     private suspend fun getGenresFromRepository(fetch: suspend () -> List<Genre>): GenresUiState {
         return try {
             GenresUiState.Success(fetch())
