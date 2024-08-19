@@ -22,9 +22,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.paging.compose.collectAsLazyPagingItems
-import androidx.paging.compose.items
 import coil.compose.AsyncImage
-import com.example.tmdb_movies.R
+import com.example.myapplication.R
 
 @Composable
 fun GenreScreen(
@@ -40,20 +39,21 @@ fun GenreScreen(
             .fillMaxSize()
             .padding(12.dp),
     ) {
-        items(items = moviePagingItems) { movie ->
+        items(count = moviePagingItems.itemCount) { movie ->
             var imagePainter: Painter? by remember { mutableStateOf(null) }
 
             Card(modifier = modifier
                 .fillMaxWidth()
-                .height(150.dp).padding(bottom = 8.dp), onClick = {
-                detailViewModel.setCardDetail(movie!!, imagePainter)
-                                            cardClicked()
+                .height(150.dp)
+                .padding(bottom = 8.dp), onClick = {
+                detailViewModel.setCardDetail(moviePagingItems[movie]!!, imagePainter)
+                cardClicked()
             }) {
                 Row(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    AsyncImage(model = movie!!.fullPosterUrl,
+                    AsyncImage(model = moviePagingItems[movie]!!.fullPosterUrl,
                         error = painterResource(R.drawable.ic_broken_image),
                         placeholder = painterResource(R.drawable.loading_img),
                         contentDescription = null,
@@ -63,10 +63,11 @@ fun GenreScreen(
                             imagePainter = painter.painter
                         })
                     Text(
-                        text = movie!!.title,
+                        text = moviePagingItems[movie]!!.title,
                         fontSize = 20.sp,
                         modifier = Modifier
-                            .padding(start = 15.dp).align(Alignment.CenterVertically)
+                            .padding(start = 15.dp)
+                            .align(Alignment.CenterVertically)
                             .weight(7F)
                     )
                 }
@@ -74,3 +75,4 @@ fun GenreScreen(
         }
     }
 }
+

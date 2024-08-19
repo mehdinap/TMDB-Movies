@@ -34,7 +34,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
-import com.example.tmdb_movies.R
+import com.example.myapplication.R
 import com.example.tmdb_movies.model.Movie
 import com.example.tmdb_movies.ui.theme.TMDBMoviesTheme
 
@@ -83,7 +83,7 @@ fun MovieCategoryRow(
                     modifier = Modifier
                         .padding(4.dp)
                         .fillMaxHeight()
-                        .width(170.dp)
+                        .width(150.dp)
                 )
             }
         }
@@ -146,7 +146,11 @@ fun MovieCard(
                 modifier = Modifier.fillMaxSize(),
                 onSuccess = { painter ->
                     imagePainter = painter.painter
-                })
+                },
+//                onError = { painter ->
+//                    imagePainter = painterResource(R.drawable.ic_broken_image)
+//                }
+            )
         }
         Text(
             text = movie.title,

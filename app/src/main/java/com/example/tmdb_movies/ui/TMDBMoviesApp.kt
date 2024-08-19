@@ -3,7 +3,6 @@ package com.example.tmdb_movies.ui
 import android.annotation.SuppressLint
 import android.os.Build
 import androidx.annotation.RequiresExtension
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -32,8 +31,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.myapplication.R
 import com.example.tmdb_movies.MovieApplication
-import com.example.tmdb_movies.R
 import com.example.tmdb_movies.ui.screens.DetailScreen
 import com.example.tmdb_movies.ui.screens.DetailViewModel
 import com.example.tmdb_movies.ui.screens.GenreScreen
@@ -144,8 +143,8 @@ fun TMDBTopBarrApp(
     })
 }
 
-@RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
 //@Preview
+@RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
 @Composable
 fun PreviewApp() {
     TMDBMoviesApp()

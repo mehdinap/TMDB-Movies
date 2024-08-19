@@ -5,7 +5,6 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.annotation.RequiresExtension
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
@@ -15,7 +14,6 @@ import com.example.tmdb_movies.ui.TMDBMoviesApp
 import com.example.tmdb_movies.ui.theme.TMDBMoviesTheme
 
 class MainActivity : ComponentActivity() {
-    @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -33,7 +31,6 @@ class MainActivity : ComponentActivity() {
 
 
 
-@RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
 @Preview(showBackground = true)
 @Composable
 fun TMDBMovieAppPreview() {
