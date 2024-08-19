@@ -3,7 +3,6 @@ package com.example.tmdb_movies.ui
 import android.annotation.SuppressLint
 import android.os.Build
 import androidx.annotation.RequiresExtension
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -46,7 +45,6 @@ enum class TMDBScreen() {
 
 }
 
-@RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -144,7 +142,6 @@ fun TMDBTopBarrApp(
     })
 }
 
-@RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
 //@Preview
 @Composable
 fun PreviewApp() {

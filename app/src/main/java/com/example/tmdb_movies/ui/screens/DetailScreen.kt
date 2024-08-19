@@ -31,7 +31,12 @@ fun DetailScreen(
     modifier: Modifier.Companion,
 ) {
     val movie = detailViewModel.uiState.collectAsState().value
+    // use the Flow not state. the ovbserv broke.
     val painter = detailViewModel.imagePainter
+
+    /*
+    * Ui Data
+    * */
 
     val scrollState = rememberScrollState()
     Column(
@@ -65,19 +70,21 @@ fun DetailScreen(
                 shape = MaterialTheme.shapes.medium,
                 elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
             ) {
-                Image(
-                    contentScale = ContentScale.Crop,
-                    painter = painter!!,
-                    contentDescription = null,
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .align(Alignment.End),
-/*                .fillMaxWidth(0.6F)  // Adjust width to cover part of the first image
-                .fillMaxHeight(0.6F)
-                .height(150.dp)       // Set the height for the second image
-                .align(Alignment.BottomStart)  // Position at the bottom left of the first image
-                .offset(y = 50.dp) // Move the second image up to overlap*/
-                )
+                painter?.let {
+                    Image(
+                        contentScale = ContentScale.Crop,
+                        painter = it,
+                        contentDescription = null,
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .align(Alignment.End),
+                        /*                .fillMaxWidth(0.6F)  // Adjust width to cover part of the first image
+                                .fillMaxHeight(0.6F)
+                                .height(150.dp)       // Set the height for the second image
+                                .align(Alignment.BottomStart)  // Position at the bottom left of the first image
+                                .offset(y = 50.dp) // Move the second image up to overlap*/
+                    )
+                }
             }
         }
         Row {

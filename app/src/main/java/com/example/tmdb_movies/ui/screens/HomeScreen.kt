@@ -9,11 +9,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -24,15 +27,17 @@ import androidx.compose.ui.unit.dp
 import com.example.tmdb_movies.data.AppType
 import com.example.tmdb_movies.model.Genre
 import com.example.tmdb_movies.ui.MovieUiState
+
 val navigationItemContentList = listOf(
     NavigationItemContent(appType = AppType.Movie, text = "Movie"),
     NavigationItemContent(appType = AppType.TV, text = "TV"),
 )
+
 @Composable
 fun HomeScreen(
     movieCategories: List<MovieCategory>,
     detailViewModel: DetailViewModel,
-    genreViewModel: GenreViewModel ,
+    genreViewModel: GenreViewModel,
     retryAction: () -> Unit,
     modifier: Modifier = Modifier,
     genreList: List<Genre>,
@@ -47,6 +52,7 @@ fun HomeScreen(
         )
     } else {
         Column {
+            val scrollState = rememberScrollState()
             Column(Modifier.weight(100F)) {
                 LazyColumn(
                     contentPadding = contentPadding, modifier = modifier
@@ -70,15 +76,22 @@ fun HomeScreen(
                         }
                     }
                 }
-                LazyColumn(
+                LazyRow(
                     modifier = Modifier
-                        .fillMaxSize()
+//                        .fillMaxSize()
                         .padding(start = 8.dp, end = 8.dp)
-                        .weight(10F)
+                        .weight(7F)
                 ) {
                     items(items = genreList, itemContent = { genre ->
                         Box {
-                            Text(text = genre.name, modifier = Modifier.padding(8.dp))
+                            TextButton(
+                                content = { Text(text = genre.name) },
+                                onClick = {
+                                    genreViewModel.loadMoviesForGenre(genre.id)
+                                    genreClicked()
+                                },
+                                modifier = Modifier.padding(8.dp)
+                            )
                         }
                     })
                 }
@@ -116,8 +129,7 @@ fun BottomNavigationBar(
                 onClick = { onTabPressed(navItem.appType) },
                 icon = {
                     Text(
-                        text = navItem.text,
-                        style = if (currentTab == navItem.appType) {
+                        text = navItem.text, style = if (currentTab == navItem.appType) {
                             TextStyle(
                                 brush = Brush.linearGradient(
                                     colors = gradientColors

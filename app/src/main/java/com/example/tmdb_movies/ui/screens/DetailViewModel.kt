@@ -22,7 +22,9 @@ class DetailViewModel() : ViewModel() {
         _uiState.update { movie }
         imagePainter = painter
     }
-
+/*
+* make a image loader for in memory image
+* */
 
 
     companion object {

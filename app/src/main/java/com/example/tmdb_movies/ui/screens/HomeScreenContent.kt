@@ -83,7 +83,7 @@ fun MovieCategoryRow(
                     modifier = Modifier
                         .padding(4.dp)
                         .fillMaxHeight()
-                        .width(170.dp)
+                        .width(150.dp)
                 )
             }
         }
@@ -146,7 +146,11 @@ fun MovieCard(
                 modifier = Modifier.fillMaxSize(),
                 onSuccess = { painter ->
                     imagePainter = painter.painter
-                })
+                },
+//                onError = { painter ->
+//                    imagePainter = painterResource(R.drawable.ic_broken_image)
+//                }
+            )
         }
         Text(
             text = movie.title,

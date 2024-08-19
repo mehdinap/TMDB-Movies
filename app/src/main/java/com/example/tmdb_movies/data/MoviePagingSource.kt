@@ -1,24 +1,26 @@
 package com.example.tmdb_movies.data
 
-import android.os.Build
-import android.util.Log
-import androidx.annotation.RequiresExtension
+import com.example.tmdb_movies.data.dao.MovieDao
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.example.tmdb_movies.model.Movie
 import com.example.tmdb_movies.network.MTDBApiService
 import com.example.tmdb_movies.adapters.MovieAdapter
+import toEntity
+import toMovie
+
 
 class MoviePagingSource(
-    private val genreId: String,
-    private val apiService: MTDBApiService
+private val genreId: String,
+private val apiService: MTDBApiService,
+private val movieDao: MovieDao
 ) : PagingSource<Int, Movie>() {
 
-    @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Movie> {
         val page = params.key ?: 1
         return try {
             val movies = MovieAdapter.moviesOfResponse(apiService.getMovieByGenre(genreId, page))
+//            movieDao.insertMovies(movies.map { it.toEntity(genreId) })
 
             LoadResult.Page(
                 data = movies,
@@ -27,6 +29,16 @@ class MoviePagingSource(
             )
         } catch (e: Exception) {
             LoadResult.Error(e)
+//            val cachedMovies = movieDao.getMoviesByGenre(genreId)
+//            if (cachedMovies.isNotEmpty()) {
+//                LoadResult.Page(
+//                    data = cachedMovies.map { it.toMovie() },
+//                    prevKey = if (page == 1) null else page - 1,
+//                    nextKey = if (cachedMovies.isEmpty()) null else page + 1
+//                )
+//            } else {
+//                LoadResult.Error(e)
+//            }
         }
     }
 
@@ -37,3 +49,6 @@ class MoviePagingSource(
         }
     }
 }
+
+
+
