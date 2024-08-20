@@ -42,6 +42,6 @@ class DefaultAppContainer(
     override val movieRepository: MovieRepository by lazy {
         NetworkMovieRepository(
             retrofitService, database.movieDao()
-        ) // Pass the DAO to the repository
+        )
     }
 }

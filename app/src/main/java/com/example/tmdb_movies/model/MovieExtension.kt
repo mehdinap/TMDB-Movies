@@ -10,15 +10,15 @@ fun MovieEntity.toMovie(): Movie {
     return Movie(
         id = this.id,
         title = this.title,
-        poster = this.poster,
+    poster = this.poster,
 //        backdrop = this.backdrop,
-        overview = this.overview,
+    overview = this.overview,
 //        genreId = this.genreId
     )
 }
 
 
-fun Movie.toEntity(genreId:String): MovieEntity {
+fun Movie.toEntity(genreId: String): MovieEntity {
     return MovieEntity(
         id = this.id,
         title = this.title,
