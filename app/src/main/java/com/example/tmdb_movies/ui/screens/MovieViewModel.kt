@@ -21,9 +21,11 @@ import com.example.tmdb_movies.model.Movie
 import com.example.tmdb_movies.ui.GenresUiState
 import com.example.tmdb_movies.ui.MovieUiState
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import java.io.IOException
 
+@RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
 class MovieViewModel(private val movieRepository: MovieRepository) : ViewModel() {
 
     var remoteGenres: List<Genre> by mutableStateOf(emptyList())
@@ -35,36 +37,34 @@ class MovieViewModel(private val movieRepository: MovieRepository) : ViewModel()
     }
 
     /* for under API 31 crashed .  use alternative. */
+    @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
     fun getMovies() {
         viewModelScope.launch(Dispatchers.IO) {
             val check: GenresUiState = getGenresFromRepository {
                 movieRepository.getMovieGenres()
             }
-            when (check) {
-                is GenresUiState.Success -> {
+            try {
+                if (check is GenresUiState.Success) {
+//                when (check) {
+//                    is GenresUiState.Success -> {
                     remoteGenres = check.movie
+                    remoteGenres.forEach { movieRepository.saveGenre(it) }
                     movieCategories = remoteGenres.take(6).map { genre ->
                         MovieCategory(genre = genre, uiState = getMoviesFromRepository {
-                            movieRepository.getMovieByGenres(genre.id)
+                            movieRepository.getMovieByGenres(genre.id, 1)
                         })
                     }
-                    remoteGenres.forEach { genre ->
-                        movieRepository.saveGenre(genre)
-                    }
                 }
-
-                is GenresUiState.Error -> {
-                    movieCategories =
-                        mutableListOf(MovieCategory(Genre("fail", "fail"), MovieUiState.Error))
-//                    remoteGenres = movieRepository.getGenresFromLocal()
-//                    movieCategories = remoteGenres.take(6).map { genre ->
-//                        MovieCategory(genre = genre, uiState = MovieUiState.Success(
-//                            movieRepository.getMoviesByGenreFromLocal(genre.id)
-//                        ))
-//                    }
+            } catch (e: Exception) {
+                Log.e("GenresUiState.Success", e.toString())
+                remoteGenres = movieRepository.getGenresFromLocal()
+                movieCategories = remoteGenres.take(6).map { genre ->
+                    MovieCategory(
+                        genre = genre, uiState = MovieUiState.Success(
+                            movieRepository.getMoviesByGenreFromLocal(genre.id)
+                        )
+                    )
                 }
-
-                is GenresUiState.Loading -> TODO()
             }
         }
     }
@@ -73,25 +73,29 @@ class MovieViewModel(private val movieRepository: MovieRepository) : ViewModel()
         return try {
             MovieUiState.Success(fetch())
         } catch (e: IOException) {
+            Log.e("test", e.toString())
             MovieUiState.Error
         } catch (e: HttpException) {
+            Log.e("test", e.toString())
             MovieUiState.Error
         } catch (e: Exception) {
+            Log.e("test", e.toString())
             MovieUiState.Error
         }
     }
 
+    @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
     private suspend fun getGenresFromRepository(fetch: suspend () -> List<Genre>): GenresUiState {
         return try {
             GenresUiState.Success(fetch())
         } catch (e: IOException) {
-            Log.e("test",e.toString())
+            Log.e("test", e.toString())
             GenresUiState.Error
         } catch (e: HttpException) {
-            Log.e("test",e.toString())
+            Log.e("test", e.toString())
             GenresUiState.Error
         } catch (e: Exception) {
-            Log.e("test",e.toString())
+            Log.e("test", e.toString())
             GenresUiState.Error
         }
     }

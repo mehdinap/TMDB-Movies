@@ -1,5 +1,7 @@
 package com.example.tmdb_movies.ui.screens
 
+import android.content.ClipData.Item
+import androidx.compose.runtime.Composable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
@@ -10,6 +12,8 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
+import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.collectAsLazyPagingItems
 import com.example.tmdb_movies.MovieApplication
 import com.example.tmdb_movies.data.MovieRepository
 import com.example.tmdb_movies.model.Movie
@@ -22,10 +26,12 @@ import kotlinx.coroutines.launch
 
 class GenreViewModel(private val movieRepository: MovieRepository) : ViewModel() {
 
-    private val _moviesPagingData = MutableStateFlow<PagingData<Movie>>(PagingData.empty())
+    private val _moviesPagingData =
+        MutableStateFlow<PagingData<Movie>>(PagingData.empty())
     /* use another Ui state and expose that not  "moviesPagingData" */
 
     val moviesPagingData: StateFlow<PagingData<Movie>> get() = _moviesPagingData
+
     private var hasLoadedInitialPage = false
 
     /* place Pager in Data or Domain Layer */
@@ -36,11 +42,11 @@ class GenreViewModel(private val movieRepository: MovieRepository) : ViewModel()
     }
 
     fun loadMoviesForGenre(genreId: String) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             getMoviePaging(genreId).collect { pagingData ->
-                    _moviesPagingData.update { pagingData }
-                    hasLoadedInitialPage = true
-                }
+                _moviesPagingData.update { pagingData }
+                hasLoadedInitialPage = true
+            }
         }
     }
 

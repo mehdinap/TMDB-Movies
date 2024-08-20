@@ -12,18 +12,12 @@ interface MovieDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
      fun insertMovie(movie: MovieEntity)
 
-//    @Insert(onConflict = OnConflictStrategy.REPLACE)
-//    fun insertMovies(movies: List<MovieEntity>)
-
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertGenre(genre: GenreEntity)
 
-//    @Insert(onConflict = OnConflictStrategy.REPLACE)
-//    fun insertGenres(genres: List<GenreEntity>)
-//
-//    @Query("SELECT * FROM movies WHERE genreId = :genreId")
-//    fun getMoviesByGenre(genreId: String): List<MovieEntity>
-//
-//    @Query("SELECT * FROM genres")
-//    fun getGenres(): List<GenreEntity>
+    @Query("SELECT * FROM movies WHERE genreId = :genreId")
+    fun getMoviesByGenre(genreId: String): List<MovieEntity>
+
+    @Query("SELECT * FROM genres")
+    fun getGenres(): List<GenreEntity>
 }

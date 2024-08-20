@@ -31,8 +31,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.tmdb_movies.MovieApplication
 import com.example.tmdb_movies.R
+import com.example.tmdb_movies.MovieApplication
 import com.example.tmdb_movies.ui.screens.DetailScreen
 import com.example.tmdb_movies.ui.screens.DetailViewModel
 import com.example.tmdb_movies.ui.screens.GenreScreen
@@ -45,6 +45,7 @@ enum class TMDBScreen() {
 
 }
 
+@RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -143,6 +144,7 @@ fun TMDBTopBarrApp(
 }
 
 //@Preview
+@RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
 @Composable
 fun PreviewApp() {
     TMDBMoviesApp()
