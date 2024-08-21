@@ -45,8 +45,6 @@ class MovieViewModel(private val movieRepository: MovieRepository) : ViewModel()
             }
             try {
                 if (check is GenresUiState.Success) {
-//                when (check) {
-//                    is GenresUiState.Success -> {
                     remoteGenres = check.movie
                     remoteGenres.forEach { movieRepository.saveGenre(it) }
                     movieCategories = remoteGenres.take(6).map { genre ->

@@ -6,14 +6,14 @@ import com.example.tmdb_movies.model.Movie
 /*
 * make a interface for mapper to DI, Repo local or remote.
 * */
-fun MovieEntity.toMovie(): Movie {
+fun MovieEntity.toMovie(genreId: String): Movie {
     return Movie(
         id = this.id,
         title = this.title,
-    poster = this.poster,
+        poster = this.poster,
 //        backdrop = this.backdrop,
-    overview = this.overview,
-//        genreId = this.genreId
+        overview = this.overview,
+        genreId = genreId
     )
 }
 

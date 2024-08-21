@@ -29,6 +29,7 @@ import com.example.tmdb_movies.R
 fun GenreScreen(
     genreViewModel: GenreViewModel,
     detailViewModel: DetailViewModel,
+    onBackClicked: () -> Unit,
     cardClicked: () -> Unit,
     modifier: Modifier = Modifier
 ) {

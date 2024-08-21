@@ -23,7 +23,8 @@ data class Movie(
     @SerializedName(value = "poster_path") val poster: String,
 //    @SerializedName(value = "backdrop_path") val backdrop: String,
     val overview: String,
-//    val genreId: String
+    val genreId: String?,
+//    var page:String?
 ) {     // make in Base image URl
     val fullPosterUrl: String
         get() = "https://image.tmdb.org/t/p/w342$poster"
@@ -42,5 +43,4 @@ data class Genre(
     val id: String,
     val name: String,
 )
-
 

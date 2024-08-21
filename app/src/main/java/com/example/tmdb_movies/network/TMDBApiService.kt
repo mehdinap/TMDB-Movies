@@ -7,7 +7,7 @@ import retrofit2.http.GET
 import retrofit2.http.Headers
 import retrofit2.http.Query
 
-interface MTDBApiService {
+interface TMDBApiService {
     @GET("discover/movie")
     @Headers("accept: application/json")
     suspend fun getMovieByGenre(

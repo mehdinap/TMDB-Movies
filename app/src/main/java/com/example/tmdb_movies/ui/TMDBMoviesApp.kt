@@ -102,9 +102,9 @@ fun TMDBMoviesApp(
                     GenreScreen(
                         genreViewModel,
                         detailViewModel = detailViewModel,
-//                        onBackClicked = {
-//                            navController.navigate(TMDBScreen.ShowCase.name)
-//                        },
+                        onBackClicked = {
+                            navController.navigate(TMDBScreen.ShowCase.name)
+                        },
                         cardClicked = {
                             navController.navigate(TMDBScreen.DetailPage.name)
                         },
@@ -127,19 +127,19 @@ fun TMDBTopBarrApp(
 ) {
     CenterAlignedTopAppBar(scrollBehavior = scrollBehavior, title = {
         Row {
-        if (canNavigateBack) {
-            IconButton(onClick = navigateUp) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = "back button"
-                )
+            if (canNavigateBack) {
+                IconButton(onClick = navigateUp) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = "back button"
+                    )
+                }
             }
-        }
             Text(
                 text = stringResource(R.string.app_name_top_bar),
                 style = MaterialTheme.typography.headlineMedium
             )
-    }
+        }
     })
 }
 

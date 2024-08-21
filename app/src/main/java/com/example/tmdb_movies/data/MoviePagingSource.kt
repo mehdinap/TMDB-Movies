@@ -1,67 +1,43 @@
-package com.example.tmdb_movies.data
+package com.example.tmdb_movies.data.paging
 
-import android.util.Log
-import com.example.tmdb_movies.data.dao.MovieDao
+import android.os.Build
+import androidx.annotation.RequiresExtension
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
-import com.example.tmdb_movies.model.Movie
-import com.example.tmdb_movies.network.MTDBApiService
 import com.example.tmdb_movies.adapters.MovieAdapter
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.coroutineScope
-import toEntity
-import toMovie
+import com.example.tmdb_movies.model.Movie
+import com.example.tmdb_movies.network.TMDBApiService
+import retrofit2.HttpException
+import java.io.IOException
 
-
-class MoviePagingSource(
-    private val genreId: String,
-    private val apiService: MTDBApiService,
-    private val movieDao: MovieDao
+class MoviesPagingSource(
+    private val apiService: TMDBApiService,
+    private val genreId: String
 ) : PagingSource<Int, Movie>() {
 
+    @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Movie> {
         val page = params.key ?: 1
         return try {
+            // Fetch data from the API
             val movies = MovieAdapter.moviesOfResponse(apiService.getMovieByGenre(genreId, page))
-            movies.forEach {
-                try {
-                    Log.i("INSERT BY PAGING",it.toEntity(genreId).toString())
-                    movieDao.insertMovie(it.toEntity(genreId))
-                } catch (e: Exception) {
-                    // this null handling because some movie poster have problem/overview. we null handling for all.
-                    Log.e("INSERT BY PAGING",e.toString())
-                //                    movieDao.insertMovie(MovieEntity(it.id?:"", it.title?:"", it.poster?:"", it.overview?:"", genreId?:""))
-                }
-            }
+
             LoadResult.Page(
                 data = movies,
                 prevKey = if (page == 1) null else page - 1,
                 nextKey = if (movies.isEmpty()) null else page + 1
             )
-
-        } catch (e: Exception) {
-            LoadResult.Error(e)
-//            val cachedMovies = movieDao.getMoviesByGenre(genreId)
-//            if (cachedMovies.isNotEmpty()) {
-//                LoadResult.Page(
-//                    data = cachedMovies.map { it.toMovie() },
-//                    prevKey = if (page == 1) null else page - 1,
-//                    nextKey = if (cachedMovies.isEmpty()) null else page + 1
-//                )
-//            } else {
-//                LoadResult.Error(e)
-//            }
+        } catch (exception: IOException) {
+            LoadResult.Error(exception)
+        } catch (exception: HttpException) {
+            LoadResult.Error(exception)
         }
     }
 
     override fun getRefreshKey(state: PagingState<Int, Movie>): Int? {
-        return state.anchorPosition?.let { position ->
-            state.closestPageToPosition(position)?.prevKey?.plus(1) ?: state.closestPageToPosition(
-                position
-            )?.nextKey?.minus(1)
+        return state.anchorPosition?.let { anchorPosition ->
+            state.closestPageToPosition(anchorPosition)?.prevKey?.plus(1)
+                ?: state.closestPageToPosition(anchorPosition)?.nextKey?.minus(1)
         }
     }
 }
-
-
-

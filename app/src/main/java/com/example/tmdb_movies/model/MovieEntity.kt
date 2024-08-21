@@ -9,7 +9,7 @@ data class MovieEntity(
     val title: String,
     val poster: String,
     val overview: String,
-    val genreId: String
+    val genreId: String,
 )
 
 @Entity(tableName = "genres")

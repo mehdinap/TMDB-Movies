@@ -1,14 +1,21 @@
 package com.example.tmdb_movies.data
 
 import android.content.Context
-import com.example.tmdb_movies.data.dao.MovieDao
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import com.example.tmdb_movies.data.dao.MoviesDao
+import com.example.tmdb_movies.data.dao.RemoteKeysDao
+import com.example.tmdb_movies.model.RemoteKeys
 
-@Database(entities = [MovieEntity::class, GenreEntity::class], version = 1, exportSchema = false)
+@Database(
+    entities = [MovieEntity::class, GenreEntity::class, RemoteKeys::class],
+    version = 1,
+    exportSchema = false
+)
 abstract class AppDatabase : RoomDatabase() {
-    abstract fun movieDao(): MovieDao
+    abstract fun getMovieDao(): MoviesDao
+    abstract fun getRemoteKeysDao(): RemoteKeysDao
 
     companion object {
         @Volatile
