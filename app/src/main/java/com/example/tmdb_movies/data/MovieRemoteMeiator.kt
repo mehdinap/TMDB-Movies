@@ -26,15 +26,19 @@ class MoviesRemoteMediator(
     private val db: AppDatabase
 ) : RemoteMediator<Int, Movie>() {
 
-    override suspend fun initialize(): InitializeAction {
-        val cacheTimeout = TimeUnit.MILLISECONDS.convert(1, TimeUnit.HOURS)
-        val creationTime = db.getRemoteKeysDao().getCreationTime()
-        return if (System.currentTimeMillis() - (creationTime ?: 0) < cacheTimeout) {
-            InitializeAction.SKIP_INITIAL_REFRESH
-        } else {
-            InitializeAction.LAUNCH_INITIAL_REFRESH
+    override suspend fun initialize(): InitializeAction =
+        withContext(Dispatchers.IO) {
+            val cacheTimeout = TimeUnit.MILLISECONDS.convert(1, TimeUnit.HOURS)
+            val creationTime = db.getRemoteKeysDao().getCreationTime()
+            return@withContext if (System.currentTimeMillis() - (creationTime
+                    ?: 0) < cacheTimeout
+            ) {
+                InitializeAction.SKIP_INITIAL_REFRESH
+            } else {
+                InitializeAction.LAUNCH_INITIAL_REFRESH
+            }
         }
-    }
+
 
     @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
     override suspend fun load(
@@ -85,8 +89,6 @@ class MoviesRemoteMediator(
                     }
 
                     db.getRemoteKeysDao().insertAll(keys)
-//                    db.getMovieDao()
-//                        .insertAll(movies.onEach { it.page = page.toString() })
                     movies.forEach {
                         db.getMovieDao().insertMovie(it.toEntity(genreId))
                     }
@@ -101,23 +103,29 @@ class MoviesRemoteMediator(
         }
     }
 
-    private suspend fun getRemoteKeyForLastItem(state: PagingState<Int, Movie>): RemoteKeys? {
-        return state.pages.lastOrNull { it.data.isNotEmpty() }?.data?.lastOrNull()?.let { movie ->
-            db.getRemoteKeysDao().getRemoteKeyByMovieID(movie.id)
+    private suspend fun getRemoteKeyForLastItem(state: PagingState<Int, Movie>): RemoteKeys? =
+        withContext(Dispatchers.IO) {
+            return@withContext state.pages.lastOrNull { it.data.isNotEmpty() }?.data?.lastOrNull()
+                ?.let { movie ->
+                    db.getRemoteKeysDao().getRemoteKeyByMovieID(movie.id)
+                }
         }
-    }
 
-    private suspend fun getRemoteKeyForFirstItem(state: PagingState<Int, Movie>): RemoteKeys? {
-        return state.pages.firstOrNull { it.data.isNotEmpty() }?.data?.firstOrNull()?.let { movie ->
-            db.getRemoteKeysDao().getRemoteKeyByMovieID(movie.id)
+
+    private suspend fun getRemoteKeyForFirstItem(state: PagingState<Int, Movie>): RemoteKeys? =
+        withContext(Dispatchers.IO) {
+            return@withContext state.pages.firstOrNull { it.data.isNotEmpty() }?.data?.firstOrNull()
+                ?.let { movie ->
+                    db.getRemoteKeysDao().getRemoteKeyByMovieID(movie.id)
+                }
         }
-    }
 
-    private suspend fun getRemoteKeyClosestToCurrentPosition(state: PagingState<Int, Movie>): RemoteKeys? {
-        return state.anchorPosition?.let { position ->
-            state.closestItemToPosition(position)?.id?.let { movieId ->
-                db.getRemoteKeysDao().getRemoteKeyByMovieID(movieId)
+    private suspend fun getRemoteKeyClosestToCurrentPosition(state: PagingState<Int, Movie>): RemoteKeys? =
+        withContext(Dispatchers.IO) {
+            return@withContext state.anchorPosition?.let { position ->
+                state.closestItemToPosition(position)?.id?.let { movieId ->
+                    db.getRemoteKeysDao().getRemoteKeyByMovieID(movieId)
+                }
             }
         }
-    }
 }

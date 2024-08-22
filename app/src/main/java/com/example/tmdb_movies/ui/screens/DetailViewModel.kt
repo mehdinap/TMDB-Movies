@@ -18,13 +18,15 @@ class DetailViewModel() : ViewModel() {
     var imagePainter: Painter? = null
         private set
 
+    var backPage: String = TMDBScreen.Detail.name
+
     fun setCardDetail(movie: Movie, painter: Painter?) {
         _uiState.update { movie }
         imagePainter = painter
     }
-/*
-* make a image loader for in memory image
-* */
+    /*
+    * make a image loader for in memory image
+    * */
 
 
     companion object {

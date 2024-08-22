@@ -21,11 +21,11 @@ import toMovie
 interface MovieRepository {
     suspend fun getMovieByGenres(genreId: String, page: Int): List<Movie>
     suspend fun getMovieGenres(): List<Genre>
-    fun getMoviesByGenrePaging(genreId: String): Flow<PagingData<Movie>>
+    suspend fun getMoviesByGenrePaging(genreId: String): Flow<PagingData<Movie>>
     suspend fun saveMovie(movie: Movie, genreId: String)
     suspend fun saveGenre(genre: Genre)
-    suspend fun getGenresFromLocal(): List<Genre>
-    suspend fun getMoviesByGenreFromLocal(genreId: String): List<Movie>
+//    suspend fun getGenresFromLocal(): List<Genre>
+//    suspend fun getMoviesByGenreFromLocal(genreId: String): List<Movie>
 }
 
 class MovieRepositoryManagement(
@@ -47,48 +47,48 @@ class MovieRepositoryManagement(
     }
 
     @OptIn(ExperimentalPagingApi::class)
-    override fun getMoviesByGenrePaging(genreId: String): Flow<PagingData<Movie>> {
-        return Pager(
-            config = PagingConfig(pageSize = 20),
-            remoteMediator = MoviesRemoteMediator(
-                genreId = genreId,
-                moviesApiService = apiService,
-                db = db
-            ),
-            pagingSourceFactory = {
-                db.getMovieDao().getMoviesByGenrePagingSource(genreId)
-            }
-        ).flow
-    }
-
-    override suspend fun saveMovie(movie: Movie, genreId: String) =
+    override suspend fun getMoviesByGenrePaging(genreId: String): Flow<PagingData<Movie>> =
         withContext(Dispatchers.IO) {
-            try {
-                db.getMovieDao().insertMovie(movie.toEntity(genreId))
-            } catch (e: Exception) {
-                // Handle null values
-                db.getMovieDao().insertMovie(
-                    MovieEntity(
-                        movie.id ?: "",
-                        movie.title ?: "",
-                        movie.poster ?: "",
-                        movie.overview ?: "",
-                        genreId
-                    )
-                )
-            }
+            return@withContext Pager(
+                config = PagingConfig(pageSize = 20),
+                remoteMediator = MoviesRemoteMediator(
+                    genreId = genreId,
+                    moviesApiService = apiService,
+                    db = db
+                ),
+                pagingSourceFactory = {
+                    db.getMovieDao().getMoviesByGenrePagingSource(genreId)
+                }
+            ).flow
         }
+
+
+    override suspend fun saveMovie(movie: Movie, genreId: String) = withContext(Dispatchers.IO) {
+        try {
+            db.getMovieDao().insertMovie(movie.toEntity(genreId))
+        } catch (e: Exception) {
+            db.getMovieDao().insertMovie(
+                MovieEntity(
+                    movie.id ?: "",
+                    movie.title ?: "",
+                    movie.poster ?: "",
+                    movie.overview ?: "",
+                    genreId
+                )
+            )
+        }
+    }
 
     override suspend fun saveGenre(genre: Genre) = withContext(Dispatchers.IO) {
         db.getMovieDao().insertGenre(genre.toEntity())
     }
 
-    override suspend fun getGenresFromLocal(): List<Genre> = withContext(Dispatchers.IO) {
-        return@withContext db.getMovieDao().getGenres().map { it.toGenre() }
-    }
-
-    override suspend fun getMoviesByGenreFromLocal(genreId: String): List<Movie> =
-        withContext(Dispatchers.IO) {
-            return@withContext db.getMovieDao().getMoviesByGenre(genreId).map { it.toMovie(genreId) }
-        }
+//    override suspend fun getGenresFromLocal(): List<Genre> = withContext(Dispatchers.IO) {
+//        return@withContext db.getMovieDao().getGenres().map { it.toGenre() }
+//    }
+//
+//    override suspend fun getMoviesByGenreFromLocal(genreId: String): List<Movie> =
+//        withContext(Dispatchers.IO) {
+//            return@withContext db.getMovieDao().getMoviesByGenre(genreId).map { it.toMovie(genreId) }
+//        }
 }

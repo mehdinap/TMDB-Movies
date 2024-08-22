@@ -27,7 +27,6 @@ import androidx.compose.ui.unit.sp
 @Composable
 fun DetailScreen(
     detailViewModel: DetailViewModel,
-    onBackClicked: (Int) -> Unit,
     modifier: Modifier.Companion,
 ) {
     val movie = detailViewModel.uiState.collectAsState().value
@@ -50,23 +49,11 @@ fun DetailScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Row {
-/*            AsyncImage(
-                model = movie!!.fullBackdropUrl,
-                error = painterResource(R.drawable.ic_broken_image),
-                placeholder = painterResource(R.drawable.loading_img),
-                contentDescription = null,
-                modifier = Modifier.fillMaxSize().fillMaxWidth().height(200.dp),
-            )*/
             Card(
                 modifier = modifier
                     .padding(start = 40.dp, top = 30.dp, end = 40.dp)
-                    .width(250.dp).height(350.dp),
-/*                    .fillMaxWidth(0.6F)  // Adjust width to cover part of the first image
-                .fillMaxHeight(0.6F)
-                .height(150.dp)       // Set the height for the second image
-                .align(Alignment.CenterVertically)  // Position at the bottom left of the first image
-                .offset(y = 50.dp) // Move the second image up to overlap,
-                .weight(30F),*/
+                    .width(250.dp)
+                    .height(350.dp),
                 shape = MaterialTheme.shapes.medium,
                 elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
             ) {
@@ -78,11 +65,6 @@ fun DetailScreen(
                         modifier = Modifier
                             .fillMaxSize()
                             .align(Alignment.End),
-                        /*                .fillMaxWidth(0.6F)  // Adjust width to cover part of the first image
-                                .fillMaxHeight(0.6F)
-                                .height(150.dp)       // Set the height for the second image
-                                .align(Alignment.BottomStart)  // Position at the bottom left of the first image
-                                .offset(y = 50.dp) // Move the second image up to overlap*/
                     )
                 }
             }
@@ -91,14 +73,12 @@ fun DetailScreen(
             Text(
                 text = movie!!.title, modifier = Modifier
                     .fillMaxWidth()
-//                .weight(5F)
                     .padding(8.dp), fontSize = 30.sp
             )
         }
         Text(
             text = movie!!.overview, modifier = Modifier
                 .fillMaxWidth()
-//                .weight(40F)
                 .padding(8.dp), fontSize = 20.sp
         )
     }

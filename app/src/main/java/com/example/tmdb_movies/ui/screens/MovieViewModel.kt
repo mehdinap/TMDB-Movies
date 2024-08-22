@@ -13,7 +13,6 @@ import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.AP
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
-import androidx.paging.LOG_TAG
 import com.example.tmdb_movies.MovieApplication
 import com.example.tmdb_movies.data.MovieRepository
 import com.example.tmdb_movies.model.Genre
@@ -21,7 +20,6 @@ import com.example.tmdb_movies.model.Movie
 import com.example.tmdb_movies.ui.GenresUiState
 import com.example.tmdb_movies.ui.MovieUiState
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import java.io.IOException
 
@@ -46,7 +44,6 @@ class MovieViewModel(private val movieRepository: MovieRepository) : ViewModel()
             try {
                 if (check is GenresUiState.Success) {
                     remoteGenres = check.movie
-                    remoteGenres.forEach { movieRepository.saveGenre(it) }
                     movieCategories = remoteGenres.take(6).map { genre ->
                         MovieCategory(genre = genre, uiState = getMoviesFromRepository {
                             movieRepository.getMovieByGenres(genre.id, 1)
@@ -55,14 +52,14 @@ class MovieViewModel(private val movieRepository: MovieRepository) : ViewModel()
                 }
             } catch (e: Exception) {
                 Log.e("GenresUiState.Success", e.toString())
-                remoteGenres = movieRepository.getGenresFromLocal()
-                movieCategories = remoteGenres.take(6).map { genre ->
-                    MovieCategory(
-                        genre = genre, uiState = MovieUiState.Success(
-                            movieRepository.getMoviesByGenreFromLocal(genre.id)
-                        )
-                    )
-                }
+//                remoteGenres = movieRepository.getGenresFromLocal()
+//                movieCategories = remoteGenres.take(6).map { genre ->
+//                    MovieCategory(
+//                        genre = genre, uiState = MovieUiState.Success(
+//                            movieRepository.getMoviesByGenreFromLocal(genre.id)
+//                        )
+//                    )
+//                }
             }
         }
     }

@@ -20,5 +20,9 @@ interface TMDBApiService {
     @Headers("accept: application/json")
     suspend fun getMovieGenres(): Response<GenresResponse>
 
+    @GET("genre/tv/list")
+    @Headers("accept: application/json")
+    suspend fun getTVGenres(): Response<GenresResponse>
+
 
 }

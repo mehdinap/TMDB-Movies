@@ -3,6 +3,8 @@ package com.example.tmdb_movies.ui.screens
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -14,10 +16,12 @@ import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -27,14 +31,20 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Color.Companion.Cyan
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.tmdb_movies.R
+import com.example.tmdb_movies.model.Genre
 import com.example.tmdb_movies.model.Movie
 import com.example.tmdb_movies.ui.theme.TMDBMoviesTheme
 
@@ -61,13 +71,10 @@ fun MovieCategoryRow(
                 modifier = Modifier.padding(start = 10.dp)
             )
 
-            TextButton(
-                content = { Text(text = "More >>", fontSize = 15.sp) },
-                onClick = {
-                    genreViewModel.loadMoviesForGenre(movieCategory.genre.id)
-                    genreClicked()
-                }
-            )
+            TextButton(content = { Text(text = "More >>", fontSize = 15.sp) }, onClick = {
+                genreViewModel.loadMoviesForGenre(movieCategory.genre.id)
+                genreClicked()
+            })
         }
 
         LazyRow(
@@ -138,7 +145,8 @@ fun MovieCard(
                 cardClicked()
             },
         ) {
-            AsyncImage(model = movie.fullPosterUrl,
+            AsyncImage(
+                model = movie.fullPosterUrl,
                 error = painterResource(R.drawable.ic_broken_image),
                 placeholder = painterResource(R.drawable.loading_img),
                 contentDescription = null,
@@ -147,9 +155,6 @@ fun MovieCard(
                 onSuccess = { painter ->
                     imagePainter = painter.painter
                 },
-//                onError = { painter ->
-//                    imagePainter = painterResource(R.drawable.ic_broken_image)
-//                }
             )
         }
         Text(
@@ -163,6 +168,42 @@ fun MovieCard(
                 .sizeIn(maxWidth = 150.dp)
                 .padding(start = 2.dp)
         )
+    }
+}
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+fun GenreList(
+    genres: List<Genre>,
+    genreViewModel: GenreViewModel,
+    genreClicked: () -> Unit,
+) {
+    val gradientColors = listOf(Cyan, Color.Blue, Color.Red)
+
+    FlowRow {
+        genres.forEach { genre ->
+            Surface(
+                shape = RoundedCornerShape(50.dp),
+                color = MaterialTheme.colorScheme.surfaceVariant,
+                modifier = Modifier
+                    .padding(8.dp)
+                    .height(40.dp)
+            ) {
+                TextButton(
+                    content = {
+                        Text(
+                            text = genre.name,
+                            modifier = Modifier
+                        )
+                    },
+                    onClick = {
+                        genreViewModel.loadMoviesForGenre(genre.id)
+                        genreClicked()
+                    },
+                )
+
+            }
+        }
     }
 }
 

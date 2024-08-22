@@ -18,6 +18,7 @@ import com.example.tmdb_movies.model.Movie
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -32,7 +33,8 @@ class GenreViewModel(private val movieRepository: MovieRepository) : ViewModel()
     /* place Pager in Data or Domain Layer */
     fun loadMoviesForGenre(genreId: String) {
         viewModelScope.launch(Dispatchers.IO) {
-            movieRepository.getMoviesByGenrePaging(genreId).collect { pagingData ->
+            movieRepository.getMoviesByGenrePaging(genreId)
+                .cachedIn(viewModelScope).collect{ pagingData ->
                     _moviesPagingData.update { pagingData }
                 }
         }
