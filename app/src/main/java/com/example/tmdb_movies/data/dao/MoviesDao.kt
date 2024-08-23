@@ -17,16 +17,23 @@ interface MoviesDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertMovieGenreCrossRefs(crossRefs: List<MovieGenreCrossRef>)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertMovieEntities(movies: List<MovieEntity>)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertGenre(genre: GenreEntity)
 
-    @Query("SELECT * FROM movies WHERE id IN (SELECT movieId FROM movie_genre_cross_ref WHERE genreId = :genreId)")
-    fun getMoviesByGenrePagingSource(genreId: String): PagingSource<Int, Movie>
+//    @Query("SELECT * FROM movies WHERE id IN (SELECT movieId FROM movie_genre_cross_ref WHERE genreId = :genreId)")
+//    fun getMoviesByGenrePagingSource(genreId: String): PagingSource<Int, MovieEntity>
 
-    @Query("SELECT * FROM movies WHERE id IN (SELECT movieId FROM movie_genre_cross_ref WHERE genreId = :genreId) LIMIT 20")
+    @Query("SELECT * FROM movies WHERE id IN (SELECT movieId FROM movie_genre_cross_ref WHERE genreId = :genreId)")
     fun getMoviesByGenre(genreId: String): List<Movie>
 
     @Query("SELECT * FROM genres")
     fun getGenres(): List<GenreEntity>
+
+    @Query("DELETE FROM movies")
+    suspend fun clearAllMovies()
+
 }
+

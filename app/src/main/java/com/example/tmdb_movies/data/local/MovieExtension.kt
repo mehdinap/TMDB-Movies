@@ -5,15 +5,14 @@ import com.example.tmdb_movies.data.model.Genre
 import com.example.tmdb_movies.data.model.Movie
 import com.example.tmdb_movies.data.model.MovieApi
 
-//fun MovieEntity.toMovie(genres: List<Int>): Movie {
-//    return Movie(
-//        id = this.id,
-//        title = this.title,
-//        poster = this.poster ?: "",
-//        overview = this.overview ?: "",
-//        genres = genres
-//    )
-//}
+fun MovieEntity.toMovie(): Movie {
+    return Movie(
+        id = this.id,
+        title = this.title,
+        poster = this.poster ?: "",
+        overview = this.overview ?: "",
+    )
+}
 
 fun Movie.toEntity(): MovieEntity {
     return MovieEntity(
