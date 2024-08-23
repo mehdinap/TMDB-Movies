@@ -7,25 +7,26 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.example.tmdb_movies.data.GenreEntity
 import com.example.tmdb_movies.data.MovieEntity
-import com.example.tmdb_movies.model.Movie
+import com.example.tmdb_movies.data.MovieGenreCrossRef
+import com.example.tmdb_movies.data.model.Movie
 
 @Dao
 interface MoviesDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     fun insertMovie(movie: MovieEntity)
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
-    fun insertAll(movies: List<MovieEntity>)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertMovieGenreCrossRefs(crossRefs: List<MovieGenreCrossRef>)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertGenre(genre: GenreEntity)
 
-    @Query("SELECT * FROM movies WHERE genreId = :genreId")
+    @Query("SELECT * FROM movies WHERE id IN (SELECT movieId FROM movie_genre_cross_ref WHERE genreId = :genreId)")
     fun getMoviesByGenrePagingSource(genreId: String): PagingSource<Int, Movie>
+
+    @Query("SELECT * FROM movies WHERE id IN (SELECT movieId FROM movie_genre_cross_ref WHERE genreId = :genreId) LIMIT 20")
+    fun getMoviesByGenre(genreId: String): List<Movie>
 
     @Query("SELECT * FROM genres")
     fun getGenres(): List<GenreEntity>
-
-    @Query("SELECT * FROM movies WHERE genreId = :genreId")
-    fun getMoviesByGenre(genreId: String): List<MovieEntity>
 }

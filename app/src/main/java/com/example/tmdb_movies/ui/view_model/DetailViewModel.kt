@@ -1,11 +1,12 @@
-package com.example.tmdb_movies.ui.screens
+package com.example.tmdb_movies.ui.view_model
 
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
-import com.example.tmdb_movies.model.Movie
+import com.example.tmdb_movies.data.model.Movie
+import com.example.tmdb_movies.ui.navigation.TMDBScreen
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

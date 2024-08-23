@@ -1,4 +1,4 @@
-package com.example.tmdb_movies.ui.screens
+package com.example.tmdb_movies.ui.view_model
 
 import android.net.http.HttpException
 import android.os.Build
@@ -13,12 +13,12 @@ import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.AP
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
-import com.example.tmdb_movies.MovieApplication
-import com.example.tmdb_movies.data.MovieRepository
-import com.example.tmdb_movies.model.Genre
-import com.example.tmdb_movies.model.Movie
-import com.example.tmdb_movies.ui.GenresUiState
-import com.example.tmdb_movies.ui.MovieUiState
+import com.example.tmdb_movies.di.MovieApplication
+import com.example.tmdb_movies.data.repository.MovieRepository
+import com.example.tmdb_movies.data.model.Genre
+import com.example.tmdb_movies.data.model.Movie
+import com.example.tmdb_movies.ui.ui_state.GenresUiState
+import com.example.tmdb_movies.ui.ui_state.MovieUiState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.IOException
@@ -41,8 +41,8 @@ class MovieViewModel(private val movieRepository: MovieRepository) : ViewModel()
             val check: GenresUiState = getGenresFromRepository {
                 movieRepository.getMovieGenres()
             }
-            try {
-                if (check is GenresUiState.Success) {
+            when (check) {
+                is GenresUiState.Success -> {
                     remoteGenres = check.movie
                     movieCategories = remoteGenres.take(6).map { genre ->
                         MovieCategory(genre = genre, uiState = getMoviesFromRepository {
@@ -50,20 +50,28 @@ class MovieViewModel(private val movieRepository: MovieRepository) : ViewModel()
                         })
                     }
                 }
-            } catch (e: Exception) {
-                Log.e("GenresUiState.Success", e.toString())
-//                remoteGenres = movieRepository.getGenresFromLocal()
-//                movieCategories = remoteGenres.take(6).map { genre ->
-//                    MovieCategory(
-//                        genre = genre, uiState = MovieUiState.Success(
-//                            movieRepository.getMoviesByGenreFromLocal(genre.id)
-//                        )
-//                    )
-//                }
+
+                is GenresUiState.Error -> {
+                    remoteGenres = movieRepository.getGenresFromLocal()
+                    movieCategories = remoteGenres.take(6).map { genre ->
+                        MovieCategory(
+                            genre = genre, uiState = MovieUiState.Success(
+                                movieRepository.getMoviesByGenreFromLocal(genre.id)
+                            )
+                        )
+                    }
+                }
+
+                is GenresUiState.Loading -> {
+                    TODO()
+                }
             }
+
         }
     }
 
+
+    @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
     private suspend fun getMoviesFromRepository(fetch: suspend () -> List<Movie>): MovieUiState {
         return try {
             MovieUiState.Success(fetch())
