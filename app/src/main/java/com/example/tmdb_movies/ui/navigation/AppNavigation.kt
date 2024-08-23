@@ -1,4 +1,4 @@
-package com.example.tmdb_movies.ui.screens
+package com.example.tmdb_movies.ui.navigation
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.Icon
@@ -16,7 +16,7 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import com.example.tmdb_movies.R
-import com.example.tmdb_movies.data.AppType
+import com.example.tmdb_movies.data.model.AppType
 
 enum class TMDBScreen() {
     Home, Detail, Genre, Search

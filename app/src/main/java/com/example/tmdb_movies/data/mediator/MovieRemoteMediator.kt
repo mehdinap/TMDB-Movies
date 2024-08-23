@@ -8,14 +8,16 @@ import androidx.paging.PagingState
 import androidx.paging.RemoteMediator
 import androidx.room.withTransaction
 import com.example.tmdb_movies.adapters.MovieAdapter
-import com.example.tmdb_movies.data.AppDatabase
-import com.example.tmdb_movies.model.Movie
-import com.example.tmdb_movies.model.RemoteKeys
-import com.example.tmdb_movies.network.TMDBApiService
+import com.example.tmdb_movies.data.local.AppDatabase
+import com.example.tmdb_movies.data.model.Movie
+import com.example.tmdb_movies.data.model.MovieApi
+import com.example.tmdb_movies.data.model.RemoteKeys
+import com.example.tmdb_movies.data.service.TMDBApiService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import retrofit2.HttpException
 import toEntity
+import toMovieGenreCrossRefs
 import java.io.IOException
 import java.util.concurrent.TimeUnit
 
@@ -26,24 +28,20 @@ class MoviesRemoteMediator(
     private val db: AppDatabase
 ) : RemoteMediator<Int, Movie>() {
 
-    override suspend fun initialize(): InitializeAction =
-        withContext(Dispatchers.IO) {
-            val cacheTimeout = TimeUnit.MILLISECONDS.convert(1, TimeUnit.HOURS)
-            val creationTime = db.getRemoteKeysDao().getCreationTime()
-            return@withContext if (System.currentTimeMillis() - (creationTime
-                    ?: 0) < cacheTimeout
-            ) {
-                InitializeAction.SKIP_INITIAL_REFRESH
-            } else {
-                InitializeAction.LAUNCH_INITIAL_REFRESH
-            }
+    override suspend fun initialize(): InitializeAction = withContext(Dispatchers.IO) {
+        val cacheTimeout = TimeUnit.MILLISECONDS.convert(1, TimeUnit.HOURS)
+        val creationTime = db.getRemoteKeysDao().getCreationTime()
+        return@withContext if (System.currentTimeMillis() - (creationTime ?: 0) < cacheTimeout) {
+            InitializeAction.SKIP_INITIAL_REFRESH
+        } else {
+            InitializeAction.LAUNCH_INITIAL_REFRESH
         }
+    }
 
 
     @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
     override suspend fun load(
-        loadType: LoadType,
-        state: PagingState<Int, Movie>
+        loadType: LoadType, state: PagingState<Int, Movie>
     ): MediatorResult {
         val page = when (loadType) {
             LoadType.REFRESH -> {
@@ -65,9 +63,8 @@ class MoviesRemoteMediator(
                     ?: return MediatorResult.Success(endOfPaginationReached = remoteKeys != null)
             }
         }
-
         try {
-            val movies = MovieAdapter.moviesOfResponse(
+            val movies: List<MovieApi> = MovieAdapter.moviesOfResponse(
                 moviesApiService.getMovieByGenre(genreId, page = page)
             )
             val endOfPaginationReached = movies.isEmpty()
@@ -87,10 +84,11 @@ class MoviesRemoteMediator(
                             nextKey = nextKey
                         )
                     }
-
                     db.getRemoteKeysDao().insertAll(keys)
+
                     movies.forEach {
-                        db.getMovieDao().insertMovie(it.toEntity(genreId))
+                        db.getMovieDao().insertMovie(it.toEntity())
+                        db.getMovieDao().insertMovieGenreCrossRefs(it.toMovieGenreCrossRefs())
                     }
                 }
 

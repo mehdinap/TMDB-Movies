@@ -24,6 +24,8 @@ import androidx.compose.ui.unit.sp
 import androidx.paging.compose.collectAsLazyPagingItems
 import coil.compose.AsyncImage
 import com.example.tmdb_movies.R
+import com.example.tmdb_movies.ui.view_model.DetailViewModel
+import com.example.tmdb_movies.ui.view_model.GenreViewModel
 
 @Composable
 fun GenreScreen(

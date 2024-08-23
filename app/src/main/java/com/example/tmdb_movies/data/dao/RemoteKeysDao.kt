@@ -4,7 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.example.tmdb_movies.model.RemoteKeys
+import com.example.tmdb_movies.data.model.RemoteKeys
 
 @Dao
 interface RemoteKeysDao {

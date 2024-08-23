@@ -1,7 +1,7 @@
-package com.example.tmdb_movies.network
+package com.example.tmdb_movies.data.service
 
-import com.example.tmdb_movies.model.GenresResponse
-import com.example.tmdb_movies.model.MovieResponse
+import com.example.tmdb_movies.data.model.GenresResponse
+import com.example.tmdb_movies.data.model.MovieResponse
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Headers

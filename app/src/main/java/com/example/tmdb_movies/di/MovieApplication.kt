@@ -1,10 +1,8 @@
-package com.example.tmdb_movies
+package com.example.tmdb_movies.di
 
 import android.app.Application
 import android.os.Build
 import androidx.annotation.RequiresExtension
-import com.example.tmdb_movies.data.AppContainer
-import com.example.tmdb_movies.data.DefaultAppContainer
 
 class MovieApplication : Application() {
     lateinit var container: AppContainer

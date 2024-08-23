@@ -31,16 +31,16 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.tmdb_movies.data.AppType
-import com.example.tmdb_movies.ui.screens.BottomNavigationBar
+import com.example.tmdb_movies.data.model.AppType
+import com.example.tmdb_movies.ui.navigation.BottomNavigationBar
 import com.example.tmdb_movies.ui.screens.DetailScreen
-import com.example.tmdb_movies.ui.screens.DetailViewModel
+import com.example.tmdb_movies.ui.view_model.DetailViewModel
 import com.example.tmdb_movies.ui.screens.GenreScreen
-import com.example.tmdb_movies.ui.screens.GenreViewModel
+import com.example.tmdb_movies.ui.view_model.GenreViewModel
 import com.example.tmdb_movies.ui.screens.HomeScreen
-import com.example.tmdb_movies.ui.screens.MovieViewModel
+import com.example.tmdb_movies.ui.view_model.MovieViewModel
 import com.example.tmdb_movies.ui.screens.SearchScreen
-import com.example.tmdb_movies.ui.screens.TMDBScreen
+import com.example.tmdb_movies.ui.navigation.TMDBScreen
 
 
 @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)

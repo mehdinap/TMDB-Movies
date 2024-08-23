@@ -31,22 +31,22 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.Cyan
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.tmdb_movies.R
-import com.example.tmdb_movies.model.Genre
-import com.example.tmdb_movies.model.Movie
+import com.example.tmdb_movies.data.model.Genre
+import com.example.tmdb_movies.data.model.Movie
 import com.example.tmdb_movies.ui.theme.TMDBMoviesTheme
+import com.example.tmdb_movies.ui.view_model.DetailViewModel
+import com.example.tmdb_movies.ui.view_model.GenreViewModel
+import com.example.tmdb_movies.ui.view_model.MovieCategory
 
 
 @Composable
@@ -180,8 +180,8 @@ fun GenreList(
 ) {
     val gradientColors = listOf(Cyan, Color.Blue, Color.Red)
 
-    FlowRow {
-        genres.forEach { genre ->
+    LazyRow {
+        items(items = genres) { genre ->
             Surface(
                 shape = RoundedCornerShape(50.dp),
                 color = MaterialTheme.colorScheme.surfaceVariant,

@@ -1,10 +1,13 @@
-package com.example.tmdb_movies.data
+package com.example.tmdb_movies.di
 
 import android.content.Context
 import android.os.Build
 import androidx.annotation.RequiresExtension
 import androidx.room.Room
-import com.example.tmdb_movies.network.TMDBApiService
+import com.example.tmdb_movies.data.local.AppDatabase
+import com.example.tmdb_movies.data.repository.MovieRepository
+import com.example.tmdb_movies.data.repository.MovieRepositoryManagement
+import com.example.tmdb_movies.data.service.TMDBApiService
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
